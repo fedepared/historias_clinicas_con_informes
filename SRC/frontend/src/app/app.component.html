@@ -1,0 +1,12 @@
+<h1>Prueba de conexión Backend</h1>
+
+<ul *ngIf="usuarios.length > 0">
+  <li *ngFor="let usuario of usuarios">
+    <strong>Status:</strong> {{ usuario.status }} <br>
+    <strong>Mensaje:</strong> {{ usuario.mensaje }}
+  </li>
+</ul>
+
+<div *ngIf="usuarios.length === 0">
+  Cargando datos...
+</div>
