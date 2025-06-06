@@ -1,0 +1,24 @@
+.container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    align-items: center;
+    height: 5rem;
+    background-color: #007bbd;
+    color: #fff;
+    padding: 0 25px;
+    margin-bottom: 20px;
+}
+.ul-menu {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 31px;
+    font-size: large;
+}
+.nombre {
+    font-size: 24px;
+    font-weight: bold;
+}
