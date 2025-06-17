@@ -1,0 +1,35 @@
+<app-header></app-header>
+
+<div class="container">
+    <div class="form">
+        <div class="titulo">
+            <h2>Lista de Coberturas</h2>
+        </div>
+        <div class="flex flex-column">
+            <div>
+                <p-button label="Agregar Cobertura" />
+            </div>
+            <div>
+                <p-table [value]="coberturas"   [paginator]="true"
+                [rows]="5" [rowsPerPageOptions]="[5, 10, 20]">
+                    <ng-template #header>
+                        <tr>
+                            <th>Code</th>
+                            <th>Name</th>
+                            <th>Acciones</th>
+                           
+                        </tr>
+                    </ng-template>
+                    <ng-template #body let-coberturas>
+                        <tr>
+                            <td>{{ coberturas.code }}</td>
+                            <td>{{ coberturas.name }}</td>
+                            <td></td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+            </div>
+            
+        </div>
+    </div>
+</div>

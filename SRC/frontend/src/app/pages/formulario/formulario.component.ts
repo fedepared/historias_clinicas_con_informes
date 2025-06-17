@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { HeaderComponent } from "../header/header.component";
+
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { InputTextModule } from 'primeng/inputtext';
@@ -21,6 +21,8 @@ import { BadgeModule } from 'primeng/badge';
 import { MessageService } from 'primeng/api';
 import { SelectModule } from 'primeng/select';
 import { AutoCompleteCompleteEvent, AutoCompleteModule } from 'primeng/autocomplete';
+import { HeaderComponent } from '../../components/header/header.component';
+
 @Component({
   selector: 'app-formulario',
   standalone: true,
@@ -52,7 +54,7 @@ export class FormularioComponent implements OnInit {
   uploadedFiles: any[] = [];
   totalSize: number = 0;
   totalSizePercent: number = 0;
-
+  files = [];
   constructor(private messageService: MessageService) {}
   ngOnInit() {
     this.tipoEstudio = [

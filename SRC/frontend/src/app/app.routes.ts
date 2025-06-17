@@ -1,10 +1,15 @@
 import { Routes } from '@angular/router';
-import { FormularioComponent } from './components/formulario/formulario.component';
-import { HeaderComponent } from './components/header/header.component';
-import { LoginComponent } from './components/login/login.component';
+
+
+import { FormularioComponent } from './pages/formulario/formulario.component';
+import { LoginComponent } from './pages/login/login.component';
+import { ReportesComponent } from './pages/reportes/reportes.component';
+import { CoberturasComponent } from './pages/coberturas/coberturas.component';
+
 
 export const routes: Routes = [
-    { path: 'login', component: LoginComponent },
-    { path: 'header', component: HeaderComponent },
+    { path: '', component: LoginComponent },
     { path: 'formulario', component: FormularioComponent },
+    { path: 'reportes', component: ReportesComponent },
+    { path: 'coberturas', component: CoberturasComponent}
 ];

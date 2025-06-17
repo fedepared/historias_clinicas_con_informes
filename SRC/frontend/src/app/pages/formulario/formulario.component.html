@@ -13,8 +13,8 @@
                     <label for="inputFecha">Fecha <span class="required-asterisk">*</span></label>
                     <p-datepicker class="date" [(ngModel)]="fecha" [iconDisplay]="'input'" [showIcon]="true"
                         inputId="inputFecha" dateFormat="dd/mm/yy" [showButtonBar]="true"
-                        [inputStyleClass]="'w-full p-inputtext p-component'"
-                        [style]="{'height': '45px'}"></p-datepicker>
+                        [inputStyleClass]="' p-inputtext p-component'"
+                        ></p-datepicker>
                 </div>
             </div>
             <div class="col-12 md:col-4">
@@ -40,8 +40,8 @@
                     <label for="inputFechaNacimiento">Fecha de nacimiento</label>
                     <p-datepicker class="date" [(ngModel)]="fechaNacimiento" [iconDisplay]="'input'" [showIcon]="true"
                         inputId="inputFecha" dateFormat="dd/mm/yy" [showButtonBar]="true"
-                        [inputStyleClass]="'w-full p-inputtext p-component'"
-                        [style]="{'height': '45px'}"></p-datepicker>
+                        [inputStyleClass]="' p-inputtext p-component'"
+                        ></p-datepicker>
                 </div>
             </div>
 
@@ -136,17 +136,13 @@
                 <div class="field">
                     <label for="inputCualTerapeutica">¿Cual?</label>
                     <!-- <input id="inputCualTerapeutica" type="text" pInputText> -->
-                    <p-autocomplete
+                    <p-autocomplete class=""
                     id="inputCualTerapeutica"
                     [(ngModel)]="selectTipoTerapeutica"
                     [suggestions]="filteredTerapeuticaSuggestions"
                     (completeMethod)="searchTerapeutica($event)"
                     field="name"
-                    [dropdown]="true"
-                    [forceSelection]="false"
-                    [minLength]="1"
-                    placeholder="Escribe para buscar"
-                    class="w-full"
+
                 ></p-autocomplete>
                     
                 </div>
@@ -176,7 +172,7 @@
                             <ng-template #header let-chooseCallback="chooseCallback" let-clearCallback="clearCallback"
                             let-uploadCallback="uploadCallback" let-files>
                                 <div class="w-full">
-                                    <p-button  icon="pi pi-cloud-upload text-5xl"  (onClick)="choose($event, chooseCallback)" ></p-button>
+                                    <p-button class="iconArchivos"  icon="pi pi-cloud-upload text-7xl"  (onClick)="choose($event, chooseCallback)" ></p-button>
                                    
                                 </div>
                             </ng-template>
@@ -185,7 +181,7 @@
                             <ng-template #content let-files let-removeFileCallback="removeFileCallback">
                                 <div *ngIf="files?.length > 0" class="flex flex-wrap gap-4">
                                     <div *ngFor="let file of files; let i = index"
-                                        class="p-3 border-1 surface-border border-round-xl surface-card w-36 flex flex-col items-center text-center relative">
+                                        class="p-3 border-1 surface-border border-round-xl surface-card w-36 flex flex-column items-center text-center relative">
                                         <img [src]="file.objectURL" [alt]="file.name" class="mb-2 border-round"
                                             style="width: 150px; height: 150px; object-fit: cover" />
                                         <span class="text-sm font-semibold truncate w-full mb-1">{{ file.name }}</span>
@@ -217,7 +213,7 @@
 
             <div class="col-12">
                 <div class="fiel button">
-                    <button pButton type="submit" label="Enviar"></button>
+                    <p-button class="btEnviar" pButton type="submit" label="Enviar" />
                 </div>
             </div>
         </div>

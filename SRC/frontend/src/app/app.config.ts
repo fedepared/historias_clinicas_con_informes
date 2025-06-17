@@ -19,7 +19,10 @@ export const appConfig: ApplicationConfig = {
       ripple: true, // Esto es opcional, activa el efecto ripple en botones
       translation: es, // ¡Aquí es donde se aplica la traducción!
       theme:{
-        preset: Aura
+        preset: Aura,
+        options: {
+          darkModeSelector: '.my-app-lithg'
+      }
       }
     })
   ]
