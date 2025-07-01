@@ -15,7 +15,7 @@ export class GenericService {
   }
 
   getAll(endpoint:string,params?:any){
-    console.log(`${environment.baseUrl}`+endpoint,params);
+    
     return this.apiService.GetAll(`${environment.baseUrl}`+endpoint,params);
   }
 

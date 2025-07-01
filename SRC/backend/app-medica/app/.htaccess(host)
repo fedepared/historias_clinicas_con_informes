@@ -1,0 +1,14 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /
+
+    # Redirigir desde https://dianaestrin.com a https://www.dianaestrin.com
+    RewriteCond %{HTTP_HOST} ^dianaestrin\.com$ [NC]
+    RewriteRule ^(.*)$ https://www.dianaestrin.com/$1 [R=301,L]
+
+    # Reglas de CodeIgniter para www.dianaestrin.com y app-medica.dianaestrin.com
+    RewriteCond %{HTTP_HOST} ^(www\.dianaestrin\.com|app-medica\.dianaestrin\.com)$ [NC]
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^([\s\S]*)$ index.php/$1 [L,NC,QSA]
+</IfModule>

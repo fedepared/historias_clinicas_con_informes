@@ -22,7 +22,10 @@ import { MessageService } from 'primeng/api';
 import { SelectModule } from 'primeng/select';
 import { AutoCompleteCompleteEvent, AutoCompleteModule } from 'primeng/autocomplete';
 import { HeaderComponent } from '../../components/header/header.component';
-
+import { TextareaModule } from 'primeng/textarea';
+import { GenericService } from '../../services/generic.service';
+import { IResponse } from '../../Interfaces/iresponse';
+import { coberturas } from '../../Interfaces/coberturas';
 @Component({
   selector: 'app-formulario',
   standalone: true,
@@ -32,8 +35,8 @@ import { HeaderComponent } from '../../components/header/header.component';
     ReactiveFormsModule,
     InputTextModule,
     CalendarModule, ButtonModule, DropdownModule, CardModule, RippleModule, FileUploadModule,
-    DatePickerModule, FluidModule,AutoCompleteModule,
-    FileUpload,BadgeModule,ProgressBarModule ,ToastModule,SelectModule,
+    DatePickerModule, FluidModule, AutoCompleteModule, TextareaModule,
+    FileUpload, BadgeModule, ProgressBarModule, ToastModule, SelectModule,
 
   ],
   providers: [MessageService],
@@ -51,31 +54,64 @@ export class FormularioComponent implements OnInit {
   selectTerapeutica: any;
   selectBiopsia: any;
   fechaNacimiento!: Date; // Para la fecha de nacimiento
-  uploadedFiles: any[] = [];
+  uploadedFiles: File[] = [];
   totalSize: number = 0;
   totalSizePercent: number = 0;
   files = [];
-  constructor(private messageService: MessageService) {}
+  apellidoNombrePaciente!: string;
+  edad!: number;
+  numeroDocumento!: string; 
+  numeroAfiliado!: string; 
+  mailPaciente!: string; 
+  medicoEnvia!: string; 
+  motivoEstudio!: string;
+  esofago!: string;
+  estomago!: string;
+  duodeno!: string;
+  informeEstudio!: string; 
+  conclusion!: string;
+  cantidadFrascos!: number;
+  tipoCobertura!: string;
+  coberturas:coberturas[] = [];
+  constructor(private messageService: MessageService, private genericService: GenericService) { }
+
+
   ngOnInit() {
+    this.getCoberturas();
     this.tipoEstudio = [
-        { name: 'VIDEOESOFAGASTRODUODENOSCOPIA', code: 'VEDA' },
-        { name: 'VIDEOCOLONOSCOPIA', code: 'VCC' },
-       
+      { name: 'VIDEOESOFAGASTRODUODENOSCOPIA', code: 'VEDA' },
+      { name: 'VIDEOCOLONOSCOPIA', code: 'VCC' },
+
     ];
+    this.selectTipoEstudio = this.tipoEstudio[0];
     this.siNo = [
-      { name: 'SI' },
-      { name: 'NO' },
-     
-  ];
-  this.tipoTerapeutica = [
-    {name:'Polipectomía/s'},
-    {name:'Mucosectomía'},
-    {name:'Dilatación con balón'},
-    {name:'Marcación'},
-    {name:'Tratamiento hemostático'},
-    {name:'Argón láser'},
-  ]
-}
+      { name: 'SI',code: 1 },
+      { name: 'NO', code: 0 },
+
+    ];
+    this.selectTerapeutica = this.siNo[0];
+    this.selectBiopsia = this.siNo[0];
+    this.tipoTerapeutica = [
+      { name: 'Polipectomía/s' },
+      { name: 'Mucosectomía' },
+      { name: 'Dilatación con balón' },
+      { name: 'Marcación' },
+      { name: 'Tratamiento hemostático' },
+      { name: 'Argón láser' },
+    ]
+  }
+   getCoberturas(): void {
+    this.genericService.getAll('coberturas').subscribe({
+      next: (response: any) => { 
+        this.coberturas = response as coberturas[];
+       
+      },
+      error: (err) => {
+        console.error('Error fetching coberturas:', err);
+        this.coberturas = [];
+      }
+    });
+  }
   formatSize(bytes: number): string {
     if (bytes === 0) return '0 B';
     const k = 1024;
@@ -130,4 +166,101 @@ export class FormularioComponent implements OnInit {
     // Asigna las sugerencias filtradas a la propiedad que el autocomplete usa
     this.filteredTerapeuticaSuggestions = filtered;
   }
+
+  postInforme(): void{
+    const formData = new FormData();
+    formData.append('fecha', this.fecha ? this.fecha.toISOString().split('T')[0] : ''); // Formatear fecha a YYYY-MM-DD
+    formData.append('tipo_informe', this.selectTipoEstudio?.code || ''); // 'VEDA' o 'VCC'
+    formData.append('conclusion', this.conclusion || '');
+    formData.append('efectuo_terapeutica', this.selectTerapeutica?.name === 'SI' ? '1' : '0');
+    if (this.selectTerapeutica?.name === 'SI') {
+      formData.append('tipo_terapeutica', this.selectTipoTerapeutica?.name || '');
+    }
+    formData.append('efectuo_biopsia', this.selectBiopsia?.name === 'SI' ? '1' : '0');
+    if (this.selectBiopsia?.name === 'SI') {
+      formData.append('fracos_biopsia', this.cantidadFrascos ? this.cantidadFrascos.toString() : '');
+    }
+
+    
+    if (this.selectTipoEstudio?.code === 'VEDA') {
+      formData.append('esofago', this.esofago || '');
+      formData.append('estomago', this.estomago || '');
+      formData.append('duodeno', this.duodeno || '');
+      formData.append('informe', ''); 
+    } else if (this.selectTipoEstudio?.code === 'VCC') {
+      formData.append('informe', this.informeEstudio || '');
+      formData.append('esofago', ''); 
+      formData.append('estomago', '');
+      formData.append('duodeno', '');
+    }
+
+
+    // Datos del Paciente (Frontend -> Backend)
+    formData.append('nombre_paciente', this.apellidoNombrePaciente || '');
+    formData.append('fecha_nacimiento_paciente', this.fechaNacimiento ? this.fechaNacimiento.toISOString().split('T')[0] : '');
+    formData.append('edad', this.edad ? this.edad.toString() : '');
+    formData.append('dni_paciente', this.numeroDocumento || '');
+    // Nota: 'id_cobertura' en el backend. Necesitas mapear 'inputTipoCobertura' (string) a un ID si lo requiere.
+    // Por ahora, lo enviaré como el string directamente, asumiendo que tu backend lo manejará o buscará.
+    formData.append('id_cobertura', this.tipoCobertura || ''); // ¡Ojo aquí! Si el backend espera un ID, esto puede ser un problema.
+    formData.append('numero_afiliado', this.numeroAfiliado || '');
+    formData.append('mail_paciente', this.mailPaciente || '');
+    formData.append('medico_envia_estudio', this.medicoEnvia || '');
+    formData.append('motivo_estudio', this.motivoEstudio || '');
+
+
+    // Añadir los archivos al FormData
+    // Tu backend espera 'archivo[]', así que cada archivo debe ir con la clave 'archivo'
+    this.uploadedFiles.forEach((file: File) => {
+      formData.append('archivo[]', file, file.name);
+    });
+
+    // 2. Enviar los datos usando GenericService
+    // Define el endpoint para tu API de carga de informe
+    // Asegúrate de que tu GenericService.post esté preparado para enviar FormData
+    // No necesitas establecer 'Content-Type': 'multipart/form-data'; el navegador lo hace automáticamente con FormData.
+    this.genericService.post('informe/alta', formData).subscribe({
+      next: (response: IResponse<any>) => {
+        if (response.status === 'success') {
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Éxito',
+            detail: response.message || 'Informe cargado exitosamente',
+            life: 3000
+          });
+          console.log('Informe cargado:', response.data);
+          // Opcional: limpiar el formulario o redirigir
+          // this.resetForm();
+          // this.router.navigate(['/lista-informes']);
+        } else {
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: response.message || 'Error al cargar informe',
+            life: 3000
+          });
+          console.error('Error al cargar informe (respuesta no exitosa):', response);
+        }
+      },
+      error: (err) => {
+        console.error('Error en la solicitud de carga de informe:', err);
+        let errorMessage = 'Ocurrió un error inesperado al cargar el informe.';
+        if (err.error && err.error.message) {
+          errorMessage = err.error.message;
+        } else if (err.message) {
+          errorMessage = err.message;
+        }
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: errorMessage,
+          life: 5000
+        });
+      },
+      complete: () => {
+        console.log('Solicitud de carga de informe completada.');
+      }
+    });
+  }
+  
 }

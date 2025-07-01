@@ -13,15 +13,15 @@
                     <label for="inputFecha">Fecha <span class="required-asterisk">*</span></label>
                     <p-datepicker class="date" [(ngModel)]="fecha" [iconDisplay]="'input'" [showIcon]="true"
                         inputId="inputFecha" dateFormat="dd/mm/yy" [showButtonBar]="true"
-                        [inputStyleClass]="' p-inputtext p-component'"
-                        ></p-datepicker>
+                        [inputStyleClass]="' p-inputtext p-component'"></p-datepicker>
                 </div>
             </div>
             <div class="col-12 md:col-4">
                 <div class="field">
                     <label for="inputTipoEstudio">Tipo de estudio <span class="required-asterisk">*</span></label>
-                    
-                    <p-select id="inputTipoEstudio" [options]="tipoEstudio" [(ngModel)]="selectTipoEstudio" optionLabel="name" class="w-full md:w-56" />
+
+                    <p-select id="inputTipoEstudio" [options]="tipoEstudio" [(ngModel)]="selectTipoEstudio"
+                        optionLabel="name" class="w-full md:w-56" />
                 </div>
             </div>
         </div>
@@ -32,7 +32,7 @@
             <div class="col-12 md:col-3">
                 <div class="field">
                     <label for="inputApellidoNombre">Apellido y Nombre <span class="required-asterisk">*</span></label>
-                    <input id="inputApellidoNombre" type="text" pInputText>
+                    <input id="inputApellidoNombre" type="text" pInputText [(ngModel)]="apellidoNombrePaciente">
                 </div>
             </div>
             <div class="col-12 md:col-3">
@@ -40,124 +40,122 @@
                     <label for="inputFechaNacimiento">Fecha de nacimiento</label>
                     <p-datepicker class="date" [(ngModel)]="fechaNacimiento" [iconDisplay]="'input'" [showIcon]="true"
                         inputId="inputFecha" dateFormat="dd/mm/yy" [showButtonBar]="true"
-                        [inputStyleClass]="' p-inputtext p-component'"
-                        ></p-datepicker>
+                        [inputStyleClass]="' p-inputtext p-component'"></p-datepicker>
                 </div>
             </div>
 
             <div class="col-12 md:col-3">
                 <div class="field">
                     <label for="inputEdad">Edad</label>
-                    <input id="inputEdad" type="number" pInputText>
+                    <input id="inputEdad" type="number" pInputText [(ngModel)]="edad">
                 </div>
             </div>
             <div class="col-12 md:col-3">
                 <div class="field">
                     <label for="inputNumeroDocumento">Número de documento <span
                             class="required-asterisk">*</span></label>
-                    <input id="inputNumeroDocumento" type="text" pInputText>
+                    <input id="inputNumeroDocumento" type="text" pInputText [(ngModel)]="numeroDocumento">
                 </div>
             </div>
 
             <div class="col-12 md:col-3">
                 <div class="field">
                     <label for="inputTipoCobertura">Tipo de cobertura <span class="required-asterisk">*</span></label>
-                    <input id="inputTipoCobertura" type="text" pInputText>
+                    <p-dropdown id="inputTipoCobertura" [options]="coberturas" [(ngModel)]="tipoCobertura"
+                        optionLabel="nombre_cobertura" optionValue="id_cobertura" [showClear]="true"
+                        placeholder="Seleccione una cobertura" class="w-full md:w-56"></p-dropdown>
                 </div>
             </div>
             <div class="col-12 md:col-3">
                 <div class="field">
                     <label for="inputNumeroAfiliado">Número de afiliado</label>
-                    <input id="inputNumeroAfiliado" type="text" pInputText>
+                    <input id="inputNumeroAfiliado" type="text" pInputText [(ngModel)]="numeroAfiliado">
                 </div>
             </div>
 
             <div class="col-12 md:col-3">
                 <div class="field">
                     <label for="inputMail">Mail <span class="required-asterisk">*</span></label>
-                    <input id="inputMail" type="text" pInputText>
+                    <input id="inputMail" type="text" pInputText [(ngModel)]="mailPaciente">
                 </div>
             </div>
             <div class="col-12 md:col-3">
                 <div class="field">
                     <label for="inputMedicoEnvia">Médico que envía el estudio</label>
-                    <input id="inputMedicoEnvia" type="text" pInputText>
+                    <input id="inputMedicoEnvia" type="text" pInputText [(ngModel)]="medicoEnvia">
                 </div>
             </div>
             <div class="col-12">
                 <div class="field">
                     <label for="inputMotivoEstudio">Motivo del estudio</label>
-                    <input id="inputMotivoEstudio" type="text" pInputText>
+                    <input id="inputMotivoEstudio" type="text" pInputText [(ngModel)]="motivoEstudio">
                 </div>
             </div>
         </div>
 
         <h3 class="titulo sub">Informe del estudio</h3>
         <div class="formgrid grid">
-            <div class="col-12">
+            <div class="col-12" *ngIf="selectTipoEstudio.code === 'VEDA'">
                 <div class="field">
                     <label for="inputEsfago">Esófago</label>
-                    <textarea id="inputEsfago" rows="3" pInputTextarea></textarea>
+                    <textarea id="inputEsfago" rows="3" pInputTextarea [(ngModel)]="esofago"></textarea>
                 </div>
             </div>
-            <div class="col-12">
+            <div class="col-12" *ngIf="selectTipoEstudio.code === 'VEDA'">
                 <div class="field">
                     <label for="inputEstomago">Estómago</label>
-                    <textarea id="inputEstomago" rows="3" pInputTextarea></textarea>
+                    <textarea id="inputEstomago" rows="3" pInputTextarea [(ngModel)]="estomago"></textarea>
                 </div>
             </div>
-            <div class="col-12">
+            <div class="col-12" *ngIf="selectTipoEstudio.code === 'VEDA'">
                 <div class="field">
                     <label for="inputDuodeno">Duodeno</label>
-                    <textarea id="inputDuodeno" rows="3" pInputTextarea></textarea>
+                    <textarea id="inputDuodeno" rows="3" pInputTextarea [(ngModel)]="duodeno"></textarea>
                 </div>
             </div>
-            <div class="col-12">
+            <div class="col-12" *ngIf="selectTipoEstudio.code === 'VCC'">
                 <div class="field">
                     <label for="inputInforme">Informe</label>
-                    <textarea id="inputInforme" rows="5" pInputTextarea></textarea>
+                    <textarea id="inputInforme" rows="5" pInputTextarea [(ngModel)]="informeEstudio"></textarea>
                 </div>
             </div>
             <div class="col-12">
                 <div class="field">
                     <label for="inputConclusion">Conclusión</label>
-                    <textarea id="inputConclusion" rows="5" pInputTextarea></textarea>
+                    <textarea id="inputConclusion" rows="5" pInputTextarea [(ngModel)]="conclusion"></textarea>
                 </div>
             </div>
 
             <div class="col-12 md:col-3">
                 <div class="field">
                     <label for="inputTerapeutica">¿Se efectuó terapéutica?</label>
-                    
-                    <p-select [options]="siNo" id="inputTerapeutica" [(ngModel)]="selectTerapeutica" optionLabel="name"  class="w-full md:w-56" />
+
+                    <p-select [options]="siNo" id="inputTerapeutica" [(ngModel)]="selectTerapeutica" optionLabel="name"
+                        class="w-full md:w-56" />
                 </div>
             </div>
-            <div class="col-12 md:col-3">
+            <div class="col-12 md:col-3" *ngIf="selectTerapeutica.name === 'SI'">
                 <div class="field">
                     <label for="inputCualTerapeutica">¿Cual?</label>
-                    <!-- <input id="inputCualTerapeutica" type="text" pInputText> -->
-                    <p-autocomplete class=""
-                    id="inputCualTerapeutica"
-                    [(ngModel)]="selectTipoTerapeutica"
-                    [suggestions]="filteredTerapeuticaSuggestions"
-                    (completeMethod)="searchTerapeutica($event)"
-                    field="name"
 
-                ></p-autocomplete>
-                    
+                    <p-autocomplete class="" id="inputCualTerapeutica" [(ngModel)]="selectTipoTerapeutica"
+                        [suggestions]="filteredTerapeuticaSuggestions" (completeMethod)="searchTerapeutica($event)"
+                        field="name"></p-autocomplete>
+
                 </div>
             </div>
             <div class="col-12 md:col-3">
                 <div class="field">
                     <label for="inputBiopsia">¿Se efectuó biopsia?</label>
-                    
-                    <p-select id="inputBiopsia" [options]="siNo" [(ngModel)]="selectBiopsia" optionLabel="name" class="w-full md:w-56" />
+
+                    <p-select id="inputBiopsia" [options]="siNo" [(ngModel)]="selectBiopsia" optionLabel="name"
+                        class="w-full md:w-56" />
                 </div>
             </div>
-            <div class="col-12 md:col-3">
+            <div class="col-12 md:col-3" *ngIf="selectBiopsia.name === 'SI'">
                 <div class="field">
                     <label for="inputCantidadFrascos">Cantidad de frascos</label>
-                    <input id="inputCantidadFrascos" type="number" pInputText>
+                    <input id="inputCantidadFrascos" type="number" pInputText [(ngModel)]="cantidadFrascos">
                 </div>
             </div>
             <div class="col-12">
@@ -168,16 +166,17 @@
                         <p-fileUpload class="file" name="myfile[]" accept="image/*" mode="advanced" [multiple]="true"
                             [showUploadButton]="false" [showCancelButton]="false" (onUpload)="onTemplatedUpload()"
                             (onSelect)="onSelectedFiles($event)" [customUpload]="true" [auto]="false">
-                            <!-- HEADER CUSTOM -->
+
                             <ng-template #header let-chooseCallback="chooseCallback" let-clearCallback="clearCallback"
-                            let-uploadCallback="uploadCallback" let-files>
+                                let-uploadCallback="uploadCallback" let-files>
                                 <div class="w-full">
-                                    <p-button class="iconArchivos"  icon="pi pi-cloud-upload text-7xl"  (onClick)="choose($event, chooseCallback)" ></p-button>
-                                   
+                                    <p-button class="iconArchivos" icon="pi pi-cloud-upload text-7xl"
+                                        (onClick)="choose($event, chooseCallback)"></p-button>
+
                                 </div>
                             </ng-template>
 
-                            <!-- CONTENT CUSTOM -->
+
                             <ng-template #content let-files let-removeFileCallback="removeFileCallback">
                                 <div *ngIf="files?.length > 0" class="flex flex-wrap gap-4">
                                     <div *ngFor="let file of files; let i = index"
@@ -196,15 +195,15 @@
                                 </div>
                             </ng-template>
 
-                            <!-- EMPTY -->
+
                             <ng-template #empty>
                                 <div class=" w-full">
-                                    
+
                                     <p class="mt-4 mb-0 text-sm">No se a cargado ningun archivo.</p>
                                 </div>
                             </ng-template>
 
-                            <!-- REMOVE DEFAULT FILE TEMPLATE -->
+
                             <ng-template #file></ng-template>
                         </p-fileUpload>
                     </div>
@@ -213,7 +212,7 @@
 
             <div class="col-12">
                 <div class="fiel button">
-                    <p-button class="btEnviar" pButton type="submit" label="Enviar" />
+                    <p-button class="btEnviar" pButton type="submit" label="Enviar" (click)="postInforme()" />
                 </div>
             </div>
         </div>

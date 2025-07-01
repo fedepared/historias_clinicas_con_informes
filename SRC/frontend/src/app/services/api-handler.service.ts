@@ -10,58 +10,63 @@ import { IResponse } from '../Interfaces/iresponse';
 export class ApiHandlerService implements IApiBaseActions {
 
   constructor(public httpClient:HttpClient) { }
-
-  Get(url:string,params?:ParamsType):Observable<IResponse<any>>{
+  
+  private getHttpOptions(params?: ParamsType) {
+    return {
+      params: this.createParams(params),
+      withCredentials: true // <--- ¡AQUÍ ESTÁ EL CAMBIO CLAVE!
+    };
+  }
+  Get(url: string, params?: ParamsType): Observable<IResponse<any>> {
     return this.httpClient
-      .get<IResponse<any>>(url,{params:this.createParams(params)})
-      .pipe(tap((x)=>this.handleResponse(x)))
+      .get<IResponse<any>>(url, this.getHttpOptions(params)) // Usa las opciones
+      .pipe(tap((x) => this.handleResponse(x)));
   }
 
-  GetAll(url:string,params?:ParamsType):Observable<IResponse<any>>{
+  GetAll(url: string, params?: ParamsType): Observable<IResponse<any>> {
     return this.httpClient
-      .get<IResponse<any[]>>(url,{params:this.createParams(params)})
+      .get<IResponse<any[]>>(url, this.getHttpOptions(params)) // Usa las opciones
       .pipe(
-        tap((x)=>this.handleResponse(x))
-      )
+        tap((x) => this.handleResponse(x))
+      );
   }
 
-  Post(url:string,data:any,params?:ParamsType):Observable<IResponse<any>>{
+  Post(url: string, data: any, params?: ParamsType): Observable<IResponse<any>> {
     return this.httpClient
-      .post<IResponse<any>>(url,data,{params:this.createParams(params)})
+      .post<IResponse<any>>(url, data, this.getHttpOptions(params)) // Usa las opciones
       .pipe(
-          //catchError((err:HttpErrorResponse)=>{this.handleErrorResponse(err)})
-        )
-      
+        // catchError((err:HttpErrorResponse)=>{this.handleErrorResponse(err)})
+      );
   }
 
-  Delete(url: string, data?: any, params?: ParamsType):Observable<IResponse<any>>{
-      return this.httpClient
-        .delete<IResponse<any>>(url,{params:this.createParams(params)})
-        .pipe(tap((x)=>this.handleResponse(x)))
-  }
-
-  Put(url: string, data: any, params?: ParamsType):Observable<IResponse<any>>{
-     
+  Delete(url: string, data?: any, params?: ParamsType): Observable<IResponse<any>> {
+    
     return this.httpClient
-        .put<IResponse<any>>(url,data,{params:this.createParams(params)})
-        .pipe(tap((x)=>{this.handleResponse(x)}))
+      .delete<IResponse<any>>(url, this.getHttpOptions(params)) // Usa las opciones
+      .pipe(tap((x) => this.handleResponse(x)));
   }
 
-  handleResponse(response:any){
-    //TO DO: manejar respuestas
+  Put(url: string, data: any, params?: ParamsType): Observable<IResponse<any>> {
+    return this.httpClient
+      .put<IResponse<any>>(url, data, this.getHttpOptions(params)) // Usa las opciones
+      .pipe(tap((x) => { this.handleResponse(x); }));
+  }
+
+  handleResponse(response: any) {
+    // TO DO: manejar respuestas
     console.log(response);
   }
 
-  handleErrorResponse(error:HttpErrorResponse):Observable<any>{
-    
-    return throwError(()=>new Error(error.message))
+  handleErrorResponse(error: HttpErrorResponse): Observable<any> {
+    return throwError(() => new Error(error.message));
   }
 
-  createParams(params?: ParamsType){
+  createParams(params?: ParamsType) {
     let httpParams = new HttpParams();
-    if(params){
-      Object.entries(params).forEach(([key,value]) => {
-        httpParams = httpParams.append(key,value);
+    if (params) {
+      Object.entries(params).forEach(([key, value]) => {
+        // Asegúrate de que los valores sean strings para HttpParams, si no lo son ya
+        httpParams = httpParams.append(key, String(value));
       });
     }
     return httpParams;

@@ -131,7 +131,7 @@
     font-family: inherit;
     font-feature-settings: inherit;
     font-size: 1rem;
-    color: #ffffff00;
+    color: #000000;
     transition: background var(--p-inputtext-transition-duration), color var(--p-inputtext-transition-duration), border-color var(--p-inputtext-transition-duration), outline-color var(--p-inputtext-transition-duration), box-shadow var(--p-inputtext-transition-duration);
     appearance: none;
     width: 14.5rem;
@@ -154,24 +154,7 @@
     color: #ffffff;
 }
 
-::ng-deep .btEnviar  {
-    cursor: pointer;
-    justify-content: center;
-    color: var(--p-button-primary-color);
-    background: #007bbd;
-    border: 1px solid #007bbd;
-    padding-block: var(--p-button-padding-y);
-    padding-inline: var(--p-button-padding-x);
-    border-radius: var(--p-button-border-radius);
-    gap: var(--p-button-gap);
-    width: 100%;
-}
-::ng-deep .btEnviar .p-button:not(:disabled):hover  {
-    background-color: #007bbd;
-    border: 1px solid #007bbd;
-    color: #ffffff;
-}
-.p-button {
+::ng-deep .button .p-button {
     display: inline-flex;
     cursor: pointer;
     user-select: none;
@@ -179,16 +162,24 @@
     justify-content: center;
     overflow: hidden;
     position: relative;
-    color: var(--p-button-primary-color);
-    background: #007bbd;
-    border: 1px solid var(--p-button-primary-border-color);
-    padding-block: var(--p-button-padding-y);
-    padding-inline: var(--p-button-padding-x);
+    color:#ffffff;
+    background: #007bbd !important;
+   
     font-size: 1rem;
     font-family: inherit;
     font-feature-settings: inherit;
-    transition: background var(--p-button-transition-duration), color var(--p-button-transition-duration), border-color var(--p-button-transition-duration), outline-color var(--p-button-transition-duration), box-shadow var(--p-button-transition-duration);
-    border-radius: var(--p-button-border-radius);
-    outline-color: transparent;
     gap: var(--p-button-gap);
+    width: 100% !important;
+}
+::ng-deep .button  .p-button:not(:disabled):hover  {
+    background: #007bbdbd !important;
+    border: 1px solid #007bbdbd !important;
+    color: #ffffff;
+   
+}
+::ng-deep p-autocomplete .p-inputtext {
+    border: 1px solid #c6bcbc;
+    border-radius: 4px;
+    width: 14.50rem;
+    height: 45px;
 }

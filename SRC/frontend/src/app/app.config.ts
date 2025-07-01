@@ -13,11 +13,11 @@ export const appConfig: ApplicationConfig = {
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
     provideAnimations(),
-    provideHttpClient(), // Generalmente necesario en apps modernas
+    provideHttpClient(), 
     provideAnimationsAsync(),
     providePrimeNG({
-      ripple: true, // Esto es opcional, activa el efecto ripple en botones
-      translation: es, // ¡Aquí es donde se aplica la traducción!
+      ripple: true,
+      translation: es, 
       theme:{
         preset: Aura,
         options: {

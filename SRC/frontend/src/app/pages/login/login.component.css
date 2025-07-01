@@ -47,6 +47,21 @@
     font-size: 14px;
     padding: 8px 0;
 }
+::ng-deep p-password   .p-inputtext {
+    border: none;
+    outline: none;
+    width: 100%;
+    font-size: 14px;
+    padding: 8px 0;
+}
+::ng-deep .p-password {
+    display: inline-flex;
+    position: relative;
+    width: 100%;
+}
+::ng-deep p-password {
+    width: 100%;
+}
 button {
     background-color: #009fdf;
     color: white;
@@ -60,6 +75,7 @@ button {
 .olvidaste {
     color: #009fdf; 
     font-size: 17px; 
+    cursor: pointer;
     text-decoration: none;
 }
 button:disabled {

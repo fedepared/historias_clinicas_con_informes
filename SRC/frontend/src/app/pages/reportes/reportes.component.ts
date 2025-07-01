@@ -4,10 +4,10 @@ import { DatePickerModule } from 'primeng/datepicker';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TableModule } from 'primeng/table';
-
+import { ButtonModule } from 'primeng/button';
 @Component({
   selector: 'app-reportes',
-  imports: [HeaderComponent, DatePickerModule, CommonModule, TableModule,
+  imports: [HeaderComponent, DatePickerModule, CommonModule, TableModule,ButtonModule,
     FormsModule,],
   templateUrl: './reportes.component.html',
   styleUrl: './reportes.component.css'
