@@ -20,26 +20,38 @@
     align-items: center;
     justify-content: center;
 }
+
 .title {
     font-size: 35px;
     color: #009fdf;
     margin-bottom: 17px;
     font-weight: bold;
 }
+
 .input {
     display: flex;
     align-items: center;
-    margin-bottom: 34px;
+
     border: 1px solid #ccc;
     border-radius: 6px;
     padding: 5px 10px;
     background-color: #fff;
     width: 80%;
 }
+
+.grupinput {
+    margin-bottom: 34px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
 .input .material-icons {
     margin-right: 8px;
     color: #666;
 }
+
 .input input {
     border: none;
     outline: none;
@@ -47,21 +59,25 @@
     font-size: 14px;
     padding: 8px 0;
 }
-::ng-deep p-password   .p-inputtext {
+
+::ng-deep p-password .p-inputtext {
     border: none;
     outline: none;
     width: 100%;
     font-size: 14px;
     padding: 8px 0;
 }
+
 ::ng-deep .p-password {
     display: inline-flex;
     position: relative;
     width: 100%;
 }
+
 ::ng-deep p-password {
     width: 100%;
 }
+
 button {
     background-color: #009fdf;
     color: white;
@@ -73,12 +89,22 @@ button {
 }
 
 .olvidaste {
-    color: #009fdf; 
-    font-size: 17px; 
+    color: #009fdf;
+    font-size: 17px;
     cursor: pointer;
     text-decoration: none;
 }
+
 button:disabled {
     background-color: #009fdf61;
     cursor: not-allowed;
+}
+
+.p-dialog-footer {
+    flex-shrink: 0;
+    padding: var(--p-dialog-footer-padding);
+    display: flex;
+    justify-content: space-between;
+    gap: var(--p-dialog-footer-gap);
+    flex-direction: row;
 }

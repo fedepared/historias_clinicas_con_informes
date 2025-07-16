@@ -7,6 +7,7 @@ import { provideHttpClient } from '@angular/common/http';
 import { es } from 'primelocale/es.json';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import Aura  from '@primeng/themes/aura';
+import MyPreset from './mypreset';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -19,7 +20,7 @@ export const appConfig: ApplicationConfig = {
       ripple: true,
       translation: es, 
       theme:{
-        preset: Aura,
+        preset: MyPreset,
         options: {
           darkModeSelector: '.my-app-lithg'
       }

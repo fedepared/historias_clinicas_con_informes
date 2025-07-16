@@ -1,0 +1,21 @@
+<div class="container">
+    <div class="form">
+        <p-toast />
+        <div class="titulo">
+            <h2>{{title}} Cobertura</h2>
+        </div>
+        <div class="flex flex-column flex-nowrap  gap-4">
+            <div class="flex flex-column align-items-start">
+                <label for="">Nombre Cobertura</label>
+                <input type="text" [(ngModel)]="nombreCobertura" pInputText   [disabled]="title === 'Eliminar'"/>
+            </div>
+            <div class="flex flex-row flex-nowrap justify-content-between">
+                <p-button severity="danger" (click)="cerrarDialogo()" label="Cancelar" />
+                <p-button label="{{nombrebt}}"  [disabled]="!nombreCobertura" (click)="operacion()"/>
+            </div>
+
+
+        </div>
+
+    </div>
+</div>

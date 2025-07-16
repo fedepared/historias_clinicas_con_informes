@@ -1,22 +1,20 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 
-import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { CommonModule, DatePipe } from '@angular/common';
+import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { InputTextModule } from 'primeng/inputtext';
 import { CalendarModule } from 'primeng/calendar';
 import { ButtonModule } from 'primeng/button';
-import { DropdownModule } from 'primeng/dropdown';
+
 import { CardModule } from 'primeng/card';
 import { RippleModule } from 'primeng/ripple';
-import { FileSelectEvent, FileUpload, FileUploadModule } from 'primeng/fileupload';
+import { FileUploadModule } from 'primeng/fileupload';
 
 import { DatePickerModule } from 'primeng/datepicker';
 import { FluidModule } from 'primeng/fluid';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { BrowserModule } from '@angular/platform-browser';
-import { FileUploadEvent } from 'primeng/fileupload';
+
 import { ToastModule } from 'primeng/toast';
-import { ProgressBar, ProgressBarModule } from 'primeng/progressbar';
+import { ProgressBarModule } from 'primeng/progressbar';
 import { BadgeModule } from 'primeng/badge';
 import { MessageService } from 'primeng/api';
 import { SelectModule } from 'primeng/select';
@@ -26,6 +24,7 @@ import { TextareaModule } from 'primeng/textarea';
 import { GenericService } from '../../services/generic.service';
 import { IResponse } from '../../Interfaces/iresponse';
 import { coberturas } from '../../Interfaces/coberturas';
+import { MessageModule } from 'primeng/message';
 @Component({
   selector: 'app-formulario',
   standalone: true,
@@ -33,10 +32,10 @@ import { coberturas } from '../../Interfaces/coberturas';
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
-    InputTextModule,
-    CalendarModule, ButtonModule, DropdownModule, CardModule, RippleModule, FileUploadModule,
+    InputTextModule, MessageModule,
+    CalendarModule, ButtonModule, CardModule, RippleModule, FileUploadModule,
     DatePickerModule, FluidModule, AutoCompleteModule, TextareaModule,
-    FileUpload, BadgeModule, ProgressBarModule, ToastModule, SelectModule,
+    BadgeModule, ProgressBarModule, ToastModule, SelectModule,
 
   ],
   providers: [MessageService],
@@ -44,53 +43,70 @@ import { coberturas } from '../../Interfaces/coberturas';
   styleUrl: './formulario.component.css'
 })
 export class FormularioComponent implements OnInit {
-  fecha: Date | undefined; // Para el campo de fecha, es un objeto Date
-  siNo: any[] | undefined;
-  tipoEstudio: any[] | undefined;
+  totalSize!: number;
+  totalSizePercent!: number;
+  form!: FormGroup;
+  tipoEstudio: any[] = [];
+  coberturas: any[] = [];
+  siNo: any[] = [];
   tipoTerapeutica: any[] = [];
+  medicoslist: any[] = [];
   filteredTerapeuticaSuggestions: any[] = [];
-  selectTipoTerapeutica: any;
-  selectTipoEstudio: any;
-  selectTerapeutica: any;
-  selectBiopsia: any;
-  fechaNacimiento!: Date; // Para la fecha de nacimiento
-  uploadedFiles: File[] = [];
-  totalSize: number = 0;
-  totalSizePercent: number = 0;
-  files = [];
-  apellidoNombrePaciente!: string;
-  edad!: number;
-  numeroDocumento!: string; 
-  numeroAfiliado!: string; 
-  mailPaciente!: string; 
-  medicoEnvia!: string; 
-  motivoEstudio!: string;
-  esofago!: string;
-  estomago!: string;
-  duodeno!: string;
-  informeEstudio!: string; 
-  conclusion!: string;
-  cantidadFrascos!: number;
-  tipoCobertura!: string;
-  coberturas:coberturas[] = [];
-  constructor(private messageService: MessageService, private genericService: GenericService) { }
+  filteredMedicosSuggestions: any[] = [];
+  uploadedFiles: any[] = [];
+  enviando: boolean = false;
+
+  constructor(private messageService: MessageService, private genericService: GenericService, private fb: FormBuilder) {
+    this.form = this.fb.group({
+      fecha: new FormControl(null, Validators.required),
+      tipo_informe: new FormControl(null, Validators.required),
+
+
+      nombre_paciente: new FormControl('', Validators.required),
+      fecha_nacimiento_paciente: new FormControl(''),
+      edad: new FormControl({ value: '', disabled: true }),
+
+
+      dni_paciente: new FormControl('', Validators.required),
+      id_cobertura: new FormControl(null, Validators.required),
+      numero_afiliado: new FormControl(''),
+      mail_paciente: new FormControl('', [Validators.required, Validators.email]),
+      medico_envia_estudio: new FormControl(''),
+      motivo_estudio: new FormControl(''),
+
+
+      esofago: new FormControl(''),
+      estomago: new FormControl(''),
+      duodeno: new FormControl(''),
+      informe: new FormControl(''),
+      conclusion: new FormControl(''),
+
+
+      efectuo_terapeutica: new FormControl(''),
+      tipo_terapeutica: new FormControl(''),
+      efectuo_biopsia: new FormControl(''),
+      fracos_biopsia: new FormControl(''),
+    });
+  }
 
 
   ngOnInit() {
+
     this.getCoberturas();
     this.tipoEstudio = [
       { name: 'VIDEOESOFAGASTRODUODENOSCOPIA', code: 'VEDA' },
       { name: 'VIDEOCOLONOSCOPIA', code: 'VCC' },
 
     ];
-    this.selectTipoEstudio = this.tipoEstudio[0];
+    this.form.get('tipo_informe')?.setValue(this.tipoEstudio[0]);
     this.siNo = [
-      { name: 'SI',code: 1 },
+      { name: 'SI', code: 1 },
       { name: 'NO', code: 0 },
 
     ];
-    this.selectTerapeutica = this.siNo[0];
-    this.selectBiopsia = this.siNo[0];
+    this.form.get('efectuo_terapeutica')?.setValue(this.siNo[1]);
+    this.form.get('efectuo_biopsia')?.setValue(this.siNo[1]);
+
     this.tipoTerapeutica = [
       { name: 'Polipectomía/s' },
       { name: 'Mucosectomía' },
@@ -98,13 +114,33 @@ export class FormularioComponent implements OnInit {
       { name: 'Marcación' },
       { name: 'Tratamiento hemostático' },
       { name: 'Argón láser' },
-    ]
+    ];
+    this.medicoslist = [
+      { name: "Manolizi juan manuel" },
+      { name: "Gardella ana" },
+      { name: "Trillo silvina" },
+      { name: "Pardo Mariel" },
+      { name: "Crespo marcelo" },
+      { name: "Arinovich barbara" },
+      { name: "Larraburu Alfredo" },
+      { name: "Albamonte Mirta" },
+      { name: "Galván daniel" },
+      { name: "Baulos Gustavo" },
+      { name: "Erlich Romina" },
+      { name: "Cuesta maria Celia" },
+      { name: "Roel José" },
+      { name: "Dardanelli miguel" },
+      { name: "Coqui ricardo" },
+      { name: "Menéndez José" },
+      { name: "Diana Estrin" }
+    ];
+
   }
-   getCoberturas(): void {
+  getCoberturas(): void {
     this.genericService.getAll('coberturas').subscribe({
-      next: (response: any) => { 
+      next: (response: any) => {
         this.coberturas = response as coberturas[];
-       
+
       },
       error: (err) => {
         console.error('Error fetching coberturas:', err);
@@ -121,7 +157,11 @@ export class FormularioComponent implements OnInit {
   }
 
   onSelectedFiles(event: any) {
+    this.uploadedFiles = [];
+    this.totalSize = 0;
+
     for (let file of event.files) {
+      this.uploadedFiles.push(file); // Store the file
       this.totalSize += file.size;
     }
     this.updateTotalSizePercent();
@@ -145,6 +185,9 @@ export class FormularioComponent implements OnInit {
   onRemoveTemplatingFile(event: Event, file: File, callback: Function, index: number) {
     this.totalSize -= file.size;
     this.updateTotalSizePercent();
+
+    this.uploadedFiles.splice(index, 1);
+
     callback(index);
   }
 
@@ -158,67 +201,101 @@ export class FormularioComponent implements OnInit {
 
     for (let i = 0; i < this.tipoTerapeutica.length; i++) {
       let terapeutica = this.tipoTerapeutica[i];
-      // Filtra si el nombre de la opción contiene la query (sin importar mayúsculas/minúsculas)
+
       if (terapeutica.name.toLowerCase().includes(query.toLowerCase())) {
         filtered.push(terapeutica);
       }
     }
-    // Asigna las sugerencias filtradas a la propiedad que el autocomplete usa
+
     this.filteredTerapeuticaSuggestions = filtered;
   }
+  searchMedico(event: AutoCompleteCompleteEvent) {
+    let filtered: any[] = [];
+    let query = event.query; // Lo que el usuario está escribiendo
 
-  postInforme(): void{
+    for (let i = 0; i < this.medicoslist.length; i++) {
+      let medicos = this.medicoslist[i];
+
+      if (medicos.name.toLowerCase().includes(query.toLowerCase())) {
+        filtered.push(medicos);
+      }
+    }
+
+    this.filteredMedicosSuggestions = filtered;
+  }
+
+  postInforme(): void {
+    this.enviando = true;
     const formData = new FormData();
-    formData.append('fecha', this.fecha ? this.fecha.toISOString().split('T')[0] : ''); // Formatear fecha a YYYY-MM-DD
-    formData.append('tipo_informe', this.selectTipoEstudio?.code || ''); // 'VEDA' o 'VCC'
-    formData.append('conclusion', this.conclusion || '');
-    formData.append('efectuo_terapeutica', this.selectTerapeutica?.name === 'SI' ? '1' : '0');
-    if (this.selectTerapeutica?.name === 'SI') {
-      formData.append('tipo_terapeutica', this.selectTipoTerapeutica?.name || '');
+    const formValues = this.form.value;
+
+    const tipoInformeValue = formValues['tipo_informe'] && formValues['tipo_informe'].code ? formValues['tipo_informe'].code : null;
+    const biopsia = formValues['efectuo_biopsia'] && formValues['efectuo_biopsia'].code;
+    const terapeutica = formValues['efectuo_terapeutica'] && formValues['efectuo_terapeutica'].code;
+
+
+    for (const key in formValues) {
+      if (formValues.hasOwnProperty(key)) {
+        let value = formValues[key];
+
+        if (tipoInformeValue === 'VCC') {
+          if (key === 'esofago' || key === 'estomago' || key === 'duodeno') {
+            continue;
+          }
+        } else if (tipoInformeValue === 'VEDA') {
+          if (key === 'informe') {
+            continue;
+          }
+        }
+        if (biopsia === 0){
+          if(key === 'fracos_biopsia'){
+            continue;
+          }
+        }
+        if (terapeutica === 0){
+          if(key === 'tipo_terapeutica'){
+            continue;
+          }
+        }
+
+
+        if (key === 'tipo_informe' && value && value.code) {
+          formData.append(key, value.code);
+        } else if (key === 'efectuo_terapeutica' && value && value.code !== undefined) {
+          formData.append(key, value.code.toString());
+        } else if (key === 'efectuo_biopsia' && value && value.code !== undefined) {
+          formData.append(key, value.code.toString());
+        } else if (key === 'medico_envia_estudio' && value && value.name) {
+          formData.append(key, value.name);
+        } else if (key === 'tipo_terapeutica' && value && value.name) {
+          formData.append(key, value.name);
+        } else if (key === 'fecha' && value instanceof Date) {
+
+          const day = String(value.getDate()).padStart(2, '0');
+          const month = String(value.getMonth() + 1).padStart(2, '0'); 
+          const year = value.getFullYear();
+          formData.append(key, `${year}-${month}-${day}`);
+        } else if (key === 'fecha_nacimiento_paciente' && value instanceof Date) {
+          const day = String(value.getDate()).padStart(2, '0');
+          const month = String(value.getMonth() + 1).padStart(2, '0'); 
+          const year = value.getFullYear();
+          formData.append(key, `${year}-${month}-${day}`);
+        }
+        else if (value !== null && value !== undefined) {
+
+          formData.append(key, value);
+        }
+
+      }
     }
-    formData.append('efectuo_biopsia', this.selectBiopsia?.name === 'SI' ? '1' : '0');
-    if (this.selectBiopsia?.name === 'SI') {
-      formData.append('fracos_biopsia', this.cantidadFrascos ? this.cantidadFrascos.toString() : '');
-    }
-
-    
-    if (this.selectTipoEstudio?.code === 'VEDA') {
-      formData.append('esofago', this.esofago || '');
-      formData.append('estomago', this.estomago || '');
-      formData.append('duodeno', this.duodeno || '');
-      formData.append('informe', ''); 
-    } else if (this.selectTipoEstudio?.code === 'VCC') {
-      formData.append('informe', this.informeEstudio || '');
-      formData.append('esofago', ''); 
-      formData.append('estomago', '');
-      formData.append('duodeno', '');
-    }
 
 
-    // Datos del Paciente (Frontend -> Backend)
-    formData.append('nombre_paciente', this.apellidoNombrePaciente || '');
-    formData.append('fecha_nacimiento_paciente', this.fechaNacimiento ? this.fechaNacimiento.toISOString().split('T')[0] : '');
-    formData.append('edad', this.edad ? this.edad.toString() : '');
-    formData.append('dni_paciente', this.numeroDocumento || '');
-    // Nota: 'id_cobertura' en el backend. Necesitas mapear 'inputTipoCobertura' (string) a un ID si lo requiere.
-    // Por ahora, lo enviaré como el string directamente, asumiendo que tu backend lo manejará o buscará.
-    formData.append('id_cobertura', this.tipoCobertura || ''); // ¡Ojo aquí! Si el backend espera un ID, esto puede ser un problema.
-    formData.append('numero_afiliado', this.numeroAfiliado || '');
-    formData.append('mail_paciente', this.mailPaciente || '');
-    formData.append('medico_envia_estudio', this.medicoEnvia || '');
-    formData.append('motivo_estudio', this.motivoEstudio || '');
-
-
-    // Añadir los archivos al FormData
-    // Tu backend espera 'archivo[]', así que cada archivo debe ir con la clave 'archivo'
     this.uploadedFiles.forEach((file: File) => {
       formData.append('archivo[]', file, file.name);
     });
+    console.log('DATOS A ENVIAR: ', formData)
 
-    // 2. Enviar los datos usando GenericService
-    // Define el endpoint para tu API de carga de informe
-    // Asegúrate de que tu GenericService.post esté preparado para enviar FormData
-    // No necesitas establecer 'Content-Type': 'multipart/form-data'; el navegador lo hace automáticamente con FormData.
+
     this.genericService.post('informe/alta', formData).subscribe({
       next: (response: IResponse<any>) => {
         if (response.status === 'success') {
@@ -226,20 +303,20 @@ export class FormularioComponent implements OnInit {
             severity: 'success',
             summary: 'Éxito',
             detail: response.message || 'Informe cargado exitosamente',
-            life: 3000
+            sticky: true,
           });
-          console.log('Informe cargado:', response.data);
-          // Opcional: limpiar el formulario o redirigir
-          // this.resetForm();
-          // this.router.navigate(['/lista-informes']);
+          this.form.reset();
+          this.uploadedFiles = [];
+
         } else {
           this.messageService.add({
             severity: 'error',
             summary: 'Error',
             detail: response.message || 'Error al cargar informe',
-            life: 3000
+            sticky: true
           });
           console.error('Error al cargar informe (respuesta no exitosa):', response);
+          
         }
       },
       error: (err) => {
@@ -254,13 +331,32 @@ export class FormularioComponent implements OnInit {
           severity: 'error',
           summary: 'Error',
           detail: errorMessage,
-          life: 5000
+          sticky: true
         });
       },
       complete: () => {
         console.log('Solicitud de carga de informe completada.');
+        this.enviando = false;
       }
     });
   }
-  
+
+  calcularEdad() {
+    const fecha = this.form.get('fecha_nacimiento_paciente')?.value
+    if (fecha) {
+      const hoy = new Date();
+      const fechaNac = new Date(fecha);
+      let edadCalculada = hoy.getFullYear() - fechaNac.getFullYear();
+      const mes = hoy.getMonth() - fechaNac.getMonth();
+
+      if (mes < 0 || (mes === 0 && hoy.getDate() < fechaNac.getDate())) {
+        edadCalculada--;
+      }
+      return this.form.get('edad')?.setValue(edadCalculada);
+    } else {
+      return this.form.get('edad')?.setValue(null);
+    }
+
+
+  }
 }

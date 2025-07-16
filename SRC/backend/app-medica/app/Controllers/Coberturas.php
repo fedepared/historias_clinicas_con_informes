@@ -78,30 +78,33 @@ class Coberturas extends BaseController
         try {
             $resultado = $this->coberturasModel->find($id);
 
-            if (!empty($resultado)) {
-                return [
+           if (!empty($resultado)) {
+                return $this->response->setJSON([ // <-- ¡IMPORTANTE: Usar setJSON!
                     'status' => 'success',
                     'data' => $resultado
-                ];
+                ]);
             } else {
-                return [
+                return $this->response->setStatusCode(404)->setJSON([ // <-- Usar setStatusCode y setJSON
                     'status' => 'error',
                     'message' => 'No se encontró la cobertura con el ID proporcionado.'
-                ];
+                ]);
             }
         } catch (\Exception $e) {
-            return [
+            return $this->response->setStatusCode(500)->setJSON([ // <-- Usar setStatusCode y setJSON
                 'status' => 'error',
-                'message' => $e->getMessage()
-            ];
+                'message' => 'Ocurrió un error al obtener la cobertura: ' . $e->getMessage()
+            ]);
         }
     }
 
     public function postCobertura()
     {
         try {
-            $nombreCobertura = trim($this->request->getPost('nombre_cobertura'));
-
+            $input = $this->request->getJSON(); 
+            $nombreCobertura = trim($input->nombre_cobertura ?? '');
+            
+       
+            
             $data = [
                 'nombre_cobertura' => $nombreCobertura
             ];
@@ -129,7 +132,7 @@ class Coberturas extends BaseController
         } catch (\Exception $e) {
             return $this->response->setStatusCode(500)->setJSON(['status' => 'error', 'message' => 'Ocurrió un error al crear la cobertura: ' . $e->getMessage()]);
         }
-    }
+    } 
 
     public function deleteCobertura($id)
     {

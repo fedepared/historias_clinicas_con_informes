@@ -7,26 +7,26 @@
         </div>
         <div class="flex flex-column">
             <div class="flex btcobertura">
-                <p-button label="Agregar Cobertura" />
+                <p-button label="Agregar Cobertura" (click)="abrirdialigo('Agregar' )"/>
             </div>
             <div>
                 <p-table [value]="coberturas"   [paginator]="true"
                 [rows]="5" [rowsPerPageOptions]="[5, 10, 20]">
                     <ng-template #header>
                         <tr>
-                            <th>Code</th>
-                            <th>Name</th>
+                            
+                            <th>Nombre Cobertura</th>
                             <th>Acciones</th>
                            
                         </tr>
                     </ng-template>
                     <ng-template #body let-coberturas>
                         <tr>
-                            <td>{{ coberturas.code }}</td>
-                            <td>{{ coberturas.name }}</td>
-                            <td>
-                                <p-button icon="pi pi-pencil" class="mr-2" [rounded]="true" [outlined]="true" />
-                                <p-button icon="pi pi-trash" severity="danger" [rounded]="true" [outlined]="true" />
+                            
+                            <td>{{ coberturas.nombre_cobertura }}</td>
+                            <td >
+                                <p-button *ngIf="coberturas.nombre_cobertura != 'SIN COBERTURA'" icon="pi pi-pencil" class="mr-2" [rounded]="true" [outlined]="true"  (click)="abrirdialigo('Editar', coberturas.id_cobertura)"/>
+                                <p-button *ngIf="coberturas.nombre_cobertura != 'SIN COBERTURA'" icon="pi pi-trash" severity="danger" [rounded]="true" [outlined]="true" (click)="abrirdialigo('Eliminar', coberturas.id_cobertura)" />
                             </td>
                         </tr>
                     </ng-template>

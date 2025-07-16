@@ -10,29 +10,24 @@ class CORS implements FilterInterface
 {
     public function before(RequestInterface $request, $arguments = null)
     {
-        // Esto se ejecutará ANTES de que el controlador procese la solicitud.
+        
+      $origin = $request->getHeaderLine('Origin') ?: '*';
+    $response = service('response');
 
-        // Establece los encabezados que permiten el acceso desde tu origen de Angular
-        header('Access-Control-Allow-Origin: http://localhost:62491'); // <--- ¡Importante! Tu origen de Angular
-        header('Access-Control-Allow-Headers: X-API-KEY, Origin, X-Requested-With, Content-Type, Accept, Access-Control-Request-Method, Authorization');
-        header('Access-Control-Allow-Methods: GET, POST, OPTIONS, PUT, DELETE');
-        header('Allow: GET, POST, OPTIONS, PUT, DELETE');
-        header('Access-Control-Allow-Credentials: true'); // Necesario si usas cookies o sesiones
+    $response->setHeader('Access-Control-Allow-Origin', $origin);
+    $response->setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    $response->setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
+    $response->setHeader('Access-Control-Allow-Credentials', 'true');
 
-        // Manejar solicitudes pre-vuelo OPTIONS
-        // Si la solicitud es OPTIONS, respondemos con 200 OK y terminamos el script.
-        if ($request->getMethod() === 'OPTIONS') {
-            // Detenemos la ejecución aquí, ya que la solicitud OPTIONS no necesita
-            // ser procesada por el controlador o la lógica de la aplicación.
-            // Los encabezados ya han sido enviados.
-            die();
-        }
+    
+    if ($request->getMethod() === 'options') {
+        return $response->setStatusCode(200);
+    }
+
     }
 
     public function after(RequestInterface $request, ResponseInterface $response, $arguments = null)
     {
-        // Esto se ejecutará DESPUÉS de que el controlador haya procesado la solicitud.
-        // Puedes agregar encabezados aquí si es necesario, pero para CORS 'before' suele ser suficiente.
-        // CodeIgniter agregará los encabezados establecidos en 'before' a la respuesta final.
+        
     }
 }

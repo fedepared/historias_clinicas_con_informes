@@ -12,6 +12,9 @@ import { ToastModule } from 'primeng/toast';
 import { GenericService } from '../../services/generic.service';
 import { IResponse } from '../../Interfaces/iresponse';
 import { Router } from '@angular/router';
+import { MessageModule } from 'primeng/message';
+import { InputGroupModule } from 'primeng/inputgroup';
+import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
 @Component({
   selector: 'app-login',
   standalone: true,
@@ -20,9 +23,9 @@ import { Router } from '@angular/router';
     FormsModule, 
     CardModule,
     InputTextModule,
-    PasswordModule,
-    ButtonModule,
-    RippleModule,ConfirmDialog,ToastModule
+    PasswordModule,InputGroupModule,
+    ButtonModule,InputGroupAddonModule,
+    RippleModule,ConfirmDialog,ToastModule, MessageModule
   ],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css',
@@ -32,6 +35,7 @@ export class LoginComponent implements OnInit {
   username: string = '';
   password: string = '';
   isLoginButtonDisabled: boolean = true;
+  enviando: boolean = false;
   constructor(private confirmationService: ConfirmationService,private router: Router, private messageService: MessageService,private genericService: GenericService) {}
   ngOnInit(): void {
     // Initial check for button disable state
@@ -42,17 +46,23 @@ export class LoginComponent implements OnInit {
   }
   confirm() {
     this.confirmationService.confirm({
-        header: 'Are you sure?',
-        message: 'Please confirm to proceed.',
-        accept: () => {
-            this.messageService.add({ severity: 'info', summary: 'Confirmed', detail: 'You have accepted' });
+        header: 'Cambio de contraseña',
+        message: '¿Estás seguro que deseas restablecer tu contraseña?',
+        closable: true,
+        icon: 'pi pi-exclamation-triangle',
+        rejectButtonProps: {
+                label: 'Cancelar',
+                severity: 'danger',
+                outlined: true,
         },
-        reject: () => {
-            this.messageService.add({ severity: 'info', summary: 'Rejected', detail: 'You have rejected' });
+        acceptButtonProps: {
+                label: 'Continuar',
+                 severity: 'info'
         },
     });
  }
  login(): void {
+  this.enviando = true;
   const loginPayload = {
     nombre_usuario: this.username,
     pass: this.password
@@ -65,7 +75,7 @@ export class LoginComponent implements OnInit {
           severity: 'success',
           summary: 'Éxito',
           detail: response.message || 'Inicio de sesión exitoso',
-          life: 3000
+          sticky: true
         });
        
         this.router.navigate(['/formulario']); 
@@ -76,7 +86,7 @@ export class LoginComponent implements OnInit {
           severity: 'error',
           summary: 'Error',
           detail: response.message || 'Error al iniciar sesión',
-          life: 3000
+          sticky: true
         });
         
       }
@@ -96,11 +106,11 @@ export class LoginComponent implements OnInit {
         severity: 'error',
         summary: 'Error',
         detail: errorMessage,
-        life: 5000
+        sticky: true
       });
     },
     complete: () => {
-      
+       this.enviando = false;
     }
   });
 }
