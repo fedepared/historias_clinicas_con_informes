@@ -51,7 +51,7 @@
 
             <div class="flex flex-column align-items-start  w-full">
                 <label  for="inputEdad">Edad</label>
-                <input class="w-full" id="inputEdad" type="number" pInputText formControlName="edad" >
+                <input class="w-full" id="inputEdad"  type="number" pInputText formControlName="edad" >
                 <p-message severity="error" variant="simple" size="small" *ngIf="form.get('edad')?.value == '' ">Debe selecionar un fecha de nacimiento</p-message>
             </div>
 

@@ -1,4 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { GenericService } from '../../services/generic.service';
+import { Router } from '@angular/router';
+import { AuthGuard } from '../../guards/auth.guard';
 
 @Component({
   selector: 'app-header',
@@ -8,4 +11,23 @@ import { Component } from '@angular/core';
 })
 export class HeaderComponent {
 
+  constructor(private genericService: GenericService,private router: Router, private guard:AuthGuard){
+
+    
+  }
+ 
+  salir(){
+    this.genericService.get('logout').subscribe({
+       next: (response) => {
+
+            localStorage.clear();
+            this.router.navigate(['/']); 
+        },
+        error: (err) => {
+            console.error('Error cerrar la session', err);
+            
+        }
+    })
+
+  }
 }

@@ -15,17 +15,19 @@ import { Router } from '@angular/router';
 import { MessageModule } from 'primeng/message';
 import { InputGroupModule } from 'primeng/inputgroup';
 import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
+import { DialogModule } from 'primeng/dialog';
+
 @Component({
   selector: 'app-login',
   standalone: true,
   imports: [
     CommonModule,
-    FormsModule, 
+    FormsModule,
     CardModule,
     InputTextModule,
-    PasswordModule,InputGroupModule,
-    ButtonModule,InputGroupAddonModule,
-    RippleModule,ConfirmDialog,ToastModule, MessageModule
+    PasswordModule, InputGroupModule,
+    ButtonModule, InputGroupAddonModule,
+    RippleModule, ConfirmDialog, ToastModule, MessageModule, DialogModule
   ],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css',
@@ -36,7 +38,10 @@ export class LoginComponent implements OnInit {
   password: string = '';
   isLoginButtonDisabled: boolean = true;
   enviando: boolean = false;
-  constructor(private confirmationService: ConfirmationService,private router: Router, private messageService: MessageService,private genericService: GenericService) {}
+  visible: boolean = false;
+  gmail: string = '';
+
+  constructor(private confirmationService: ConfirmationService, private router: Router, private messageService: MessageService, private genericService: GenericService) { }
   ngOnInit(): void {
     // Initial check for button disable state
     this.checkLoginButtonStatus();
@@ -46,72 +51,108 @@ export class LoginComponent implements OnInit {
   }
   confirm() {
     this.confirmationService.confirm({
-        header: 'Cambio de contraseña',
-        message: '¿Estás seguro que deseas restablecer tu contraseña?',
-        closable: true,
-        icon: 'pi pi-exclamation-triangle',
-        rejectButtonProps: {
-                label: 'Cancelar',
-                severity: 'danger',
-                outlined: true,
-        },
-        acceptButtonProps: {
-                label: 'Continuar',
-                 severity: 'info'
-        },
+      header: 'Cambio de contraseña',
+      message: '¿Estás seguro que deseas restablecer tu contraseña?',
+      closable: true,
+      icon: 'pi pi-exclamation-triangle',
+      rejectButtonProps: {
+        label: 'Cancelar',
+        severity: 'danger',
+
+      },
+      acceptButtonProps: {
+        label: 'Continuar',
+        severity: 'info'
+
+      },
+      accept: () => {
+        this.visible = true;
+      },
     });
- }
- login(): void {
-  this.enviando = true;
-  const loginPayload = {
-    nombre_usuario: this.username,
-    pass: this.password
-  };
-  this.genericService.post('login', loginPayload).subscribe({
-    next: (response: IResponse<any>) => {
-   
-      if (response.status === 'success') { 
+  }
+
+  login(): void {
+    this.enviando = true;
+    const loginPayload = {
+      nombre_usuario: this.username,
+      pass: this.password
+    };
+    this.genericService.post('login', loginPayload).subscribe({
+      next: (response: IResponse<any>) => {
+
+        localStorage.setItem('usuarioToken', 'activo');
+        localStorage.setItem('expiracion', response.data.expiracion.toString());
+        if (response.status === 'success') {
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Éxito',
+            detail: response.message ,
+            sticky: true
+          });
+          if(response.data.pidio_cambio === '1'){
+            this.router.navigate(['/reset']);
+          }else {this.router.navigate(['/formulario']);}
+
+        } else {
+
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: response.message || 'Error al iniciar sesión',
+            sticky: true
+          });
+
+        }
+      },
+      error: (err) => {
+
+
+        let errorMessage = 'Ocurrió un error inesperado al intentar iniciar sesión.';
+        if (err.error && err.error.message) {
+          errorMessage = err.error.message;
+        } else if (err.message && typeof err.message === 'string' && err.message.includes("Http failure response")) {
+          errorMessage = "Problema de conexión con el servidor o CORS. Revise la consola del navegador.";
+        } else if (err.message) {
+          errorMessage = err.message;
+        }
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: errorMessage,
+          sticky: true
+        });
+        this.enviando = false;
+      },
+      complete: () => {
+        this.enviando = false;
+      }
+    });
+  }
+  cambioPass() {
+    const body = {
+      mail: this.gmail,
+    }
+    this.genericService.post('solicitar-cambio-password', body).subscribe({
+      next: (response: IResponse<any>) => {
+      
         this.messageService.add({
           severity: 'success',
           summary: 'Éxito',
-          detail: response.message || 'Inicio de sesión exitoso',
+          detail: response.message,
           sticky: true
         });
-       
-        this.router.navigate(['/formulario']); 
-        
-      } else {
+        this.visible = false;
+        this.gmail = '';
+      },
+      error: (err) => {
        
         this.messageService.add({
           severity: 'error',
           summary: 'Error',
-          detail: response.message || 'Error al iniciar sesión',
+          detail: err.error.messages.error,
           sticky: true
         });
-        
       }
-    },
-    error: (err) => {
-      
-      
-      let errorMessage = 'Ocurrió un error inesperado al intentar iniciar sesión.';
-      if (err.error && err.error.message) { 
-        errorMessage = err.error.message;
-      } else if (err.message && typeof err.message === 'string' && err.message.includes("Http failure response")) {
-        errorMessage = "Problema de conexión con el servidor o CORS. Revise la consola del navegador.";
-      } else if (err.message) {
-        errorMessage = err.message;
-      }
-      this.messageService.add({
-        severity: 'error',
-        summary: 'Error',
-        detail: errorMessage,
-        sticky: true
-      });
-    },
-    complete: () => {
-       this.enviando = false;
-    }
-  });
-}
+    })
+  }
 }

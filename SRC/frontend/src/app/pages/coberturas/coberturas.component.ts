@@ -9,9 +9,11 @@ import { DialogService, DynamicDialogModule, DynamicDialogRef } from 'primeng/dy
 import { MessageService } from 'primeng/api';
 import { CrudCoberturasComponent } from './crud-coberturas/crud-coberturas/crud-coberturas.component';
 import { Title } from '@angular/platform-browser';
+import { TooltipModule } from 'primeng/tooltip';
+import { Toast } from "primeng/toast";
 @Component({
   selector: 'app-coberturas',
-  imports: [HeaderComponent, TableModule, CommonModule, ButtonModule, DynamicDialogModule],
+  imports: [HeaderComponent, TableModule, CommonModule, ButtonModule, DynamicDialogModule, TooltipModule, Toast],
   templateUrl: './coberturas.component.html',
   styleUrl: './coberturas.component.css',
   providers: [DialogService, MessageService],
@@ -28,7 +30,7 @@ export class CoberturasComponent implements OnInit {
     this.genericService.getAll('coberturas').subscribe({
       next: (response: any) => {
         this.coberturas = response as coberturas[];
-        console.log('COBERTURAS:', this.coberturas)
+        
 
       },
       error: (err) => {
@@ -44,6 +46,36 @@ export class CoberturasComponent implements OnInit {
       data: {title:title, id: id},
       closable: true
     })
+      this.ref.onClose.subscribe((data: any) => {
+        console.log('DATA',data)
+      if (data) {
+       
+          if (data.status === 'success' || data.success === true) {
+            this.messageService.add({
+              severity: 'success',
+              summary: 'Éxito',
+              detail: data.message,
+              sticky: true
+            });
+            this.getCoberturas();
+
+          } else {
+            this.messageService.add({
+              severity: 'error',
+              summary: 'Error',
+              detail: data.error.message,
+              sticky: true
+            });
+            this.getCoberturas();
+
+          }
+
+      }
+
+
+
+
+    });
     
   }
 }

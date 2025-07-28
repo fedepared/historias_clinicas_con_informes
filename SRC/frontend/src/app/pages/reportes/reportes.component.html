@@ -1,4 +1,5 @@
 <app-header></app-header>
+<p-toast />
 <div class="container">
     <div class="form">
         <div class="titulo">
@@ -19,13 +20,13 @@
                 </div>
                 <div class="field">
                     <div class="input-with-icon">
-                        
-                        <p-select id="inputTipoCobertura" placeholder="Seleccione una cobertura"  [options]="coberturas" [(ngModel)]="coberturaFilter"
-                        optionLabel="nombre_cobertura" optionValue="nombre_cobertura" (ngModelChange)="searchReports()"
-                        ></p-select>
+
+                        <p-select id="inputTipoCobertura" placeholder="Seleccione una cobertura" [options]="coberturas"
+                            [(ngModel)]="coberturaFilter" optionLabel="nombre_cobertura" optionValue="nombre_cobertura"
+                            (ngModelChange)="searchReports()"></p-select>
                     </div>
                 </div>
-               
+
             </div>
 
             <div class="flex flex-row">
@@ -33,28 +34,22 @@
                     <label for="">Desde :</label>
                     <p-datepicker class="date" [(ngModel)]="fechaDesdeFilter" [iconDisplay]="'input'" [showIcon]="true"
                         inputId="inputFecha" dateFormat="dd/mm/yy" [showButtonBar]="true"
-                        [inputStyleClass]="' p-inputtext p-component'" 
-                        ></p-datepicker>
+                        [inputStyleClass]="' p-inputtext p-component'"></p-datepicker>
                 </div>
                 <div>
                     <label for="">Hasta :</label>
                     <p-datepicker class="date" [(ngModel)]="fechaHastaFilter" [iconDisplay]="'input'" [showIcon]="true"
                         inputId="inputFecha" dateFormat="dd/mm/yy" [showButtonBar]="true"
-                        [inputStyleClass]="' p-inputtext p-component'"
-                        ></p-datepicker>
+                        [inputStyleClass]="' p-inputtext p-component'"></p-datepicker>
                 </div>
-                 <p-button label="Filtrar"  (onClick)="searchReports()"/>
+                <p-button label="Filtrar" [disabled]="!fechaDesdeFilter || !fechaHastaFilter " (onClick)="searchReportsDates()" />
             </div>
 
         </div>
         <div class="table">
             <p-table [value]="reporteslist" [tableStyle]="{ 'min-width': '50rem' }" [paginator]="true" [rows]="rows"
-                     [totalRecords]="totalRecords"
-                     [first]="first"
-                     [lazy]="true"
-                     (onLazyLoad)="loadReports($event)"
-                     [loading]="loading"
-                     [rowsPerPageOptions]="[5, 10, 20]">
+                [totalRecords]="totalRecords" [first]="first" [lazy]="true" (onLazyLoad)="loadReports($event)"
+                [loading]="loading" [rowsPerPageOptions]="[5, 10, 20]">
                 <ng-template #header>
                     <tr>
                         <th>Nombre</th>
@@ -74,10 +69,15 @@
                         <td>{{ reportes.mail_paciente }}</td>
                         <td>{{ reportes.tipo_informe }}</td>
                         <td>{{ nombreCobertura(reportes.id_cobertura)}}</td>
-                        <td >
-                            <p-button icon="pi pi-pencil" class="mr-2" [rounded]="true"   pTooltip="Editar" tooltipPosition="top" />
-                            <p-button icon="pi pi-send" severity="success" [rounded]="true"    pTooltip="Reenviar" tooltipPosition="top"/>
-                            <p-button icon="pi pi-download" severity="help" [rounded]="true"   pTooltip="Descargar" tooltipPosition="top"/>
+                        <td>
+                            <p-button icon="pi pi-pencil" severity="warn" class="mr-2" [rounded]="true"
+                                pTooltip="Editar" (click)="abrirdialigo(reportes.id_informe)" tooltipPosition="top" />
+                            <p-button icon="pi pi-send" severity="success" [rounded]="true" pTooltip="Reenviar"
+                                tooltipPosition="top" [loading]="spinnerR"
+                                (click)="reenviarInforme(reportes.id_informe)" />
+                            <p-button icon="pi pi-download" severity="help" [rounded]="true" pTooltip="Descargar"
+                                tooltipPosition="top" [loading]="spinnerD"
+                                (click)="descargarInforme(reportes.url_archivo)" />
 
                         </td>
                     </tr>
@@ -87,7 +87,12 @@
                         <td colspan="6">No se encontraron informes.</td>
                     </tr>
                 </ng-template>
+
             </p-table>
+            <div *ngIf="visible && reporteslist.length" class="flex flex-row-reverse">
+                <p-button (click)="descargarVariosInformes()">Descargar Informes</p-button>
+            </div>
+
         </div>
 
     </div>

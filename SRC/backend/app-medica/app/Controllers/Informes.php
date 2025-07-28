@@ -113,15 +113,26 @@ class Informes extends BaseController
     public function getByIdInformes($id)
     {
         $resultado = $this->InformesModel->getInformeByIdWithCobertura($id);
-        echo !empty($resultado) ? '<pre>' . print_r($resultado, true) . '</pre>' : 'No se encontró el informe.';
+        if ($resultado){
+           return $this->response->setJSON([
+            'data' => $resultado,
+            'status' => 'success'
+           ]);
+        }else{
+            return $this->response->setJSON([
+            'message' => 'No se encontro un informe con ese id',
+            'status' => 'error'
+           ]);
+        }
+        
     }
 
     public function descargarInformeCompleto()
     {
-        echo "FCPATH: " . FCPATH . "<br>";
+       
 
         $rutaRelativa = $this->request->getGet('ruta');
-        echo "Ruta GET: " . $rutaRelativa . "<br>";
+        
 
         log_message('debug', 'Ruta recibida: ' . $rutaRelativa);
 
@@ -132,7 +143,7 @@ class Informes extends BaseController
 
         $rutaSegura = str_replace(['..', './', '\\'], '', $rutaRelativa);
         $rutaCompleta = FCPATH . $rutaSegura;
-        echo "Ruta completa generada: " . $rutaCompleta . "<br>";
+       
 
         if (!file_exists($rutaCompleta)) {
             log_message('error', 'El archivo no existe en: ' . $rutaCompleta);
@@ -1035,8 +1046,13 @@ class Informes extends BaseController
             // Verificar si es un archivo y si es una imagen permitida
             if ($fileInfo->isFile() && in_array($fileInfo->getMimeType(), ['image/jpeg', 'image/png'])) {
                 // Generar la URL pública de la imagen
-                $publicUrl = base_url('uploads/' . $carpetaPaciente . '/' . $carpetaInformeConId . '/' . $file);
-                $imagenesEncontradas[] = $publicUrl;
+               $contenido = file_get_contents($filePath);
+            $base64 = 'data:' . $fileInfo->getMimeType() . ';base64,' . base64_encode($contenido);
+            $imagenesEncontradas[] = [
+                'nombre' => $file,
+                'url' => base_url('uploads/' . $carpetaPaciente . '/' . $carpetaInformeConId . '/' . $file),
+                'base64' => $base64
+            ];
             }
         }
 

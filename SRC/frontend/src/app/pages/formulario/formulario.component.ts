@@ -92,6 +92,8 @@ export class FormularioComponent implements OnInit {
 
   ngOnInit() {
 
+
+
     this.getCoberturas();
     this.tipoEstudio = [
       { name: 'VIDEOESOFAGASTRODUODENOSCOPIA', code: 'VEDA' },
@@ -134,6 +136,67 @@ export class FormularioComponent implements OnInit {
       { name: "Menéndez José" },
       { name: "Diana Estrin" }
     ];
+
+    this.cargarDatos();
+    this.form.valueChanges.subscribe(() => {
+      this.guardarDatos();
+    });
+
+  }
+  guardarDatos() {
+    const formValue = this.form.getRawValue();
+    localStorage.setItem('formularioDatos', JSON.stringify(formValue));
+   
+
+  }
+  cargarDatos() {
+    const saved = localStorage.getItem('formularioDatos');
+    if (saved) {
+      const values = JSON.parse(saved);
+
+
+      if (values.tipo_informe) {
+        const tipo = this.tipoEstudio.find(t => t.code === values.tipo_informe.code);
+        values.tipo_informe = tipo || null;
+      }
+
+      if (values.id_cobertura) {
+       values.id_cobertura = values.id_cobertura.toString();
+      }
+
+      if (values.efectuo_terapeutica) {
+        const terapeutica = this.siNo.find(op => op.code === values.efectuo_terapeutica.code);
+        values.efectuo_terapeutica = terapeutica || null;
+      }
+
+      if (values.efectuo_biopsia) {
+        const biopsia = this.siNo.find(op => op.code === values.efectuo_biopsia.code);
+        values.efectuo_biopsia = biopsia || null;
+      }
+
+      if (values.tipo_terapeutica) {
+        const tipoT = this.tipoTerapeutica.find(t => t.name === values.tipo_terapeutica.name);
+        values.tipo_terapeutica = tipoT || null;
+      }
+
+      if (values.medico_envia_estudio) {
+        const medico = this.medicoslist.find(m => m.name === values.medico_envia_estudio.name);
+        values.medico_envia_estudio = medico || null;
+      }
+      if (values.fecha) {
+        values.fecha = new Date(values.fecha);
+      }
+
+      if (values.fecha_nacimiento_paciente) {
+        values.fecha_nacimiento_paciente = new Date(values.fecha_nacimiento_paciente);
+        this.calcularEdad();
+      }
+
+
+      this.form.patchValue(values);
+      
+    }
+    
 
   }
   getCoberturas(): void {
@@ -247,13 +310,13 @@ export class FormularioComponent implements OnInit {
             continue;
           }
         }
-        if (biopsia === 0){
-          if(key === 'fracos_biopsia'){
+        if (biopsia === 0) {
+          if (key === 'fracos_biopsia') {
             continue;
           }
         }
-        if (terapeutica === 0){
-          if(key === 'tipo_terapeutica'){
+        if (terapeutica === 0) {
+          if (key === 'tipo_terapeutica') {
             continue;
           }
         }
@@ -272,12 +335,12 @@ export class FormularioComponent implements OnInit {
         } else if (key === 'fecha' && value instanceof Date) {
 
           const day = String(value.getDate()).padStart(2, '0');
-          const month = String(value.getMonth() + 1).padStart(2, '0'); 
+          const month = String(value.getMonth() + 1).padStart(2, '0');
           const year = value.getFullYear();
           formData.append(key, `${year}-${month}-${day}`);
         } else if (key === 'fecha_nacimiento_paciente' && value instanceof Date) {
           const day = String(value.getDate()).padStart(2, '0');
-          const month = String(value.getMonth() + 1).padStart(2, '0'); 
+          const month = String(value.getMonth() + 1).padStart(2, '0');
           const year = value.getFullYear();
           formData.append(key, `${year}-${month}-${day}`);
         }
@@ -293,7 +356,6 @@ export class FormularioComponent implements OnInit {
     this.uploadedFiles.forEach((file: File) => {
       formData.append('archivo[]', file, file.name);
     });
-    console.log('DATOS A ENVIAR: ', formData)
 
 
     this.genericService.post('informe/alta', formData).subscribe({
@@ -307,7 +369,7 @@ export class FormularioComponent implements OnInit {
           });
           this.form.reset();
           this.uploadedFiles = [];
-
+          localStorage.removeItem('formularioDatos');
         } else {
           this.messageService.add({
             severity: 'error',
@@ -316,7 +378,7 @@ export class FormularioComponent implements OnInit {
             sticky: true
           });
           console.error('Error al cargar informe (respuesta no exitosa):', response);
-          
+
         }
       },
       error: (err) => {

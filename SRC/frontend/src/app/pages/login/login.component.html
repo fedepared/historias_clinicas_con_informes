@@ -24,12 +24,14 @@
                     (input)="checkLoginButtonStatus()" />
 
             </div>
-            <p-message severity="error" variant="simple" size="small" *ngIf="password?.length === 0 ">Contraseña de usuario
+            <p-message severity="error" variant="simple" size="small" *ngIf="password?.length === 0 ">Contraseña de
+                usuario
                 es requerida</p-message>
         </div>
 
 
-        <p-button type="submit" id="submitBtn" [disabled]="isLoginButtonDisabled" (click)="login() "  [label]="enviando ? 'Ingresando...' : 'Ingresar '"></p-button>
+        <p-button type="submit" id="submitBtn" [disabled]="isLoginButtonDisabled || enviando" (click)="login() "
+            [label]="enviando ? 'Ingresando...' : 'Ingresar '"></p-button>
         <div class="mt-5 card flex justify-center">
             <p-toast />
             <p-confirmdialog />
@@ -37,5 +39,29 @@
         </div>
 
     </div>
+    <div>
+        <p-dialog header="Cambio de contraseña" [(visible)]="visible" [modal]="true" [style]="{ width: '22rem' }">
+            <span class="text-lg font-semibold">Ingrese su mail</span>
+
+            <div class="my-5">
+                <p-inputgroup>
+                    <p-inputgroup-addon>
+                        <i class="pi pi-envelope"></i>
+                    </p-inputgroup-addon>
+                    <input pInputText id="email" name="email" [(ngModel)]="gmail" #emailModel="ngModel"
+                        [ngModelOptions]="{ standalone: true }" required email autocomplete="off" placeholder="Mail" />
+
+                </p-inputgroup>
+                <p-message *ngIf="emailModel.invalid && emailModel.touched" text="Email debe ser válido"
+                    severity="error" variant="simple" size="small"></p-message>
+
+            </div>
+            <div class="flex flex-row justify-content-between">
+                <p-button label="Cancelar" (click)="visible = false" severity="danger" />
+                <p-button label="Enviar" [disabled]="!gmail || emailModel.invalid" (click)="cambioPass()" />
+            </div>
+        </p-dialog>
+    </div>
+
 
 </div>

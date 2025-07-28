@@ -1,5 +1,5 @@
 <app-header></app-header>
-
+<p-toast />
 <div class="container">
     <div class="form">
         <div class="titulo">
@@ -8,14 +8,12 @@
         </div>
         <div class="input">
             <span class="material-icons">lock</span>
-            <p-password   [toggleMask]="true"  [feedback]="false"/>
-            <!-- <span class="material-icons toggle-password">visibility</span> -->
+            <p-password  [(ngModel)]="pass1" [toggleMask]="true" placeholder="Contraseña nueva"  [feedback]="false"/>
         </div>
         <div class="input">
             <span class="material-icons">lock</span>
-            <p-password   [toggleMask]="true"  [feedback]="false"/>
-            <!-- <span class="material-icons toggle-password">visibility</span> -->
+            <p-password   [(ngModel)]="pass2" [toggleMask]="true" placeholder="Repetir Contraseña" [feedback]="false" />
         </div>
-        <button type="submit" id="submitBtn" disabled >Modificar</button>
+        <p-button (click)="validar()" type="submit" id="submitBtn" [disabled]="!pass1 || !pass2" label="Modificar" />
     </div>
 </div>

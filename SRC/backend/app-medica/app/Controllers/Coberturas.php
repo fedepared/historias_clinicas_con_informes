@@ -218,7 +218,7 @@ class Coberturas extends BaseController
             $updated = $this->coberturasModel->update($id, $updateData);
 
             if ($updated) {
-                return $this->response->setJSON(['message' => 'Cobertura modificada exitosamente.']);
+                return $this->response->setJSON(['message' => 'Cobertura modificada exitosamente.', 'status' => 'success']);
             } else {
                 return $this->response->setStatusCode(500)->setJSON(['error' => 'Error al actualizar la cobertura.']);
             }

@@ -197,9 +197,19 @@ class Usuarios extends BaseController
 
     public function cambiarPassword()
     {
+        
+         $idUsuario = session()->get('id_usuario');
+
+    // 2. Verificar que el usuario haya iniciado sesión
+        if (!$idUsuario) {
+          return $this->response->setJSON([
+            'status'  => 'error',
+            'message' => 'Acceso no autorizado. Debes iniciar sesión.'
+          ])->setStatusCode(ResponseInterface::HTTP_UNAUTHORIZED); // 401 Unauthorized
+        }
+
         $model = new UsuariosModel(); // Instanciamos el modelo de usuarios
         $data = $this->request->getJSON(true);
-
         // Verificar si se recibieron los datos correctamente
         if (!$data) {
             return $this->response->setJSON([
@@ -209,14 +219,14 @@ class Usuarios extends BaseController
         }
 
         // Validar que los datos requeridos estén presentes
-        if (!isset($data['id_usuario']) || !isset($data['password_nuevo']) || !isset($data['password_confirmar'])) {
+        if (!isset($data['password_nuevo']) || !isset($data['password_confirmar'])) {
             return $this->response->setJSON([
                 'status' => 'error',
-                'message' => 'Faltan datos requeridos: id_usuario, password_nuevo, password_confirmar'
+                'message' => 'Faltan datos requeridos: password_nuevo, password_confirmar'
             ])->setStatusCode(ResponseInterface::HTTP_BAD_REQUEST);
         }
 
-        $idUsuario = $data['id_usuario'];
+    
         // $passwordActual = $data['password_actual'];
         $passwordNuevo = $data['password_nuevo'];
         $passwordConfirmar = $data['password_confirmar'];
@@ -345,7 +355,7 @@ class Usuarios extends BaseController
     {
         session()->destroy();
 
-        return redirect()->to('/login');
+       
     }
 
 

@@ -126,3 +126,18 @@
     width: 12rem;
 
 }
+
+::ng-deep .p-dialog {
+    max-height: 90%;
+    min-width: 75%;
+    max-width: 75% !important;
+    transform: scale(1);
+    border-radius: var(--p-dialog-border-radius);
+    box-shadow: var(--p-dialog-shadow);
+    background: var(--p-dialog-background);
+    border: 1px solid var(--p-dialog-border-color);
+    color: var(--p-dialog-color);
+    display: flex;
+    flex-direction: column;
+    pointer-events: auto;
+}

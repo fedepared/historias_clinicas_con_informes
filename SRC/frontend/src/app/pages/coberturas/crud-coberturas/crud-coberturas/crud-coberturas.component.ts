@@ -10,7 +10,7 @@ import { MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
 @Component({
   selector: 'app-crud-coberturas',
-  imports: [ButtonModule, CommonModule, InputTextModule,ToastModule,
+  imports: [ButtonModule, CommonModule, InputTextModule, ToastModule,
     FormsModule],
   templateUrl: './crud-coberturas.component.html',
   styleUrl: './crud-coberturas.component.css',
@@ -22,7 +22,7 @@ export class CrudCoberturasComponent implements OnInit {
   nombrebt!: string;
   enviando: boolean = false;
 
-  constructor( private messageService: MessageService, private dialogConfi: DynamicDialogConfig, private ref: DynamicDialogRef, private genericService: GenericService) { }
+  constructor(private messageService: MessageService, private dialogConfi: DynamicDialogConfig, private ref: DynamicDialogRef, private genericService: GenericService) { }
 
 
   ngOnInit(): void {
@@ -35,7 +35,7 @@ export class CrudCoberturasComponent implements OnInit {
     if (!this.dialogConfi.data.id) {
       this.nombreCobertura = '';
     } else {
-      
+
       this.getCobertura()
     }
 
@@ -57,130 +57,85 @@ export class CrudCoberturasComponent implements OnInit {
         this.editarCobertura();
         break;
       }
-      default :{
+      default: {
         this.eliminarCobertura();
       }
 
     }
   }
   getCobertura(): void {
-      this.genericService.get('cobertura/' + this.dialogConfi.data.id ).subscribe({
-        next: (response: IResponse<any>) => {
-          
-          console.log('COBERTURA:', response)
-          this.nombreCobertura = response.data.nombre_cobertura
-  
-        },
-        error: (err) => {
-          console.error('Error fetching coberturas:', err);
-          
-        }
-      });
-    }
+    this.genericService.get('cobertura/' + this.dialogConfi.data.id).subscribe({
+      next: (response: IResponse<any>) => {
+
+        console.log('COBERTURA:', response)
+        this.nombreCobertura = response.data.nombre_cobertura
+
+      },
+      error: (err) => {
+        console.error('Error fetching coberturas:', err);
+
+      }
+    });
+  }
   postCobertura() {
     const formData = {
       nombre_cobertura: this.nombreCobertura,
 
     };
-    this.genericService.post('cobertura/alta',formData ).subscribe({
+    this.genericService.post('cobertura/alta', formData).subscribe({
       next: (response: IResponse<any>) => {
-        if (response.status === 'success') {
-          this.messageService.add({
-            severity: 'success',
-            summary: 'Éxito',
-            detail: response.message || 'Cobertura creada exitosamente',
-            sticky: true
-          });
-          
 
-        } else {
-          this.messageService.add({
-            severity: 'error',
-            summary: 'Error',
-            detail: response.message || 'Error al crear Cobertura',
-            sticky: true
-          });
-          console.error('Error al crear Cobertura (respuesta no exitosa):', response);
-        }
+        this.ref.close(response)
+
+
       },
       error: (err) => {
-        console.error('Error en la solicitud de carga de Cobertura:', err);
-        let errorMessage = 'Ocurrió un error inesperado al cargar la Cobertura.';
-        if (err.error && err.error.message) {
-          errorMessage = err.error.message;
-        } else if (err.message) {
-          errorMessage = err.message;
-        }
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: errorMessage,
-          sticky: true
-        });
+        this.ref.close(err)
+
       },
       complete: () => {
-        console.log('Solicitud de carga de cobertura completada.');
+
       }
     })
   }
-  editarCobertura(){
-   
-   const body = {
-    nombre_cobertura: this.nombreCobertura
-  };
+  editarCobertura() {
 
-  this.genericService.put(
-    'informe/editar/' + this.dialogConfi.data.id,
-    body,
-    {
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    }
-  ).subscribe({
+    const payload = {
+      nombre_cobertura: this.nombreCobertura
+    };
+    console.log('NOMBRE COBERTURA', this.nombreCobertura)
+    this.genericService.put('cobertura/editar/' + this.dialogConfi.data.id, payload).subscribe({
       next: (response: IResponse<any>) => {
-        if (response.status === 'success') {
-          this.messageService.add({
-            severity: 'success',
-            summary: 'Éxito',
-            detail: response.message || 'Cobertura modificada exitosamente',
-            sticky: true
-          });
-          
-
-        } else {
-          this.messageService.add({
-            severity: 'error',
-            summary: 'Error',
-            detail: response.message || 'Error al modificar Cobertura',
-            sticky: true
-          });
-          console.error('Error al modificar Cobertura (respuesta no exitosa):', response);
-        }
+        this.ref.close(response)
       },
       error: (err) => {
+        this.ref.close(err)
         console.error('Error en la solicitud de modificar de Cobertura:', err);
-        let errorMessage = 'Ocurrió un error inesperado al modificar la Cobertura.';
-        if (err.error && err.error.message) {
-          errorMessage = err.error.message;
-        } else if (err.message) {
-          errorMessage = err.message;
-        }
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: errorMessage,
-          sticky: true
-        });
+
       },
       complete: () => {
         console.log('Solicitud de modificacion de cobertura completada.');
       }
-    
+
     })
 
   }
-  eliminarCobertura(){
-    
+  eliminarCobertura() {
+
+    this.genericService.delete('cobertura/borrar/'  + this.dialogConfi.data.id).subscribe({
+      next: (response: IResponse<any>) => {
+        this.ref.close(response)
+      },
+      error: (err) => {
+        this.ref.close(err)
+        console.error('Error en la solicitud de eliminar Cobertura:', err);
+
+      },
+      complete: () => {
+        console.log('Solicitud de eliminacion de cobertura completada.');
+      }
+
+    })
+
   }
 }
