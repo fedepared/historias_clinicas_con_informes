@@ -9,10 +9,10 @@ import {
 } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
-@Injectable() // <-- Es una CLASE Injectable
+@Injectable() 
 export class AuthInterceptor implements HttpInterceptor {
 
-  constructor() {} // No inyecta nada, pero sigue siendo una clase
+  constructor() {} 
 
   intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
     const token = localStorage.getItem('usuarioToken');

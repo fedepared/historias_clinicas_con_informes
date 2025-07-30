@@ -28,7 +28,7 @@ $routes->group('', ['filter' => 'cors'], static function (RouteCollection $route
         return service('response')->setStatusCode(204);
     });
 
-    $routes->post('logout', 'Usuarios::logout'); 
+    $routes->post('logout', 'Usuarios::logout');
     $routes->options('logout', static function () {
         return service('response')->setStatusCode(204);
     });
@@ -135,7 +135,7 @@ $routes->group('', ['filter' => 'cors'], static function (RouteCollection $route
     $routes->options('informes/descargar-pdfs', static function () {
         return service('response')->setStatusCode(204);
     });
-    
+
     $routes->get('informes-paginado', 'Informes::getInformesPaginado');
     $routes->options('informes-paginado', static function () {
         return service('response')->setStatusCode(204);
@@ -168,4 +168,24 @@ $routes->group('', ['filter' => 'cors'], static function (RouteCollection $route
         return service('response')->setStatusCode(204);
     });
 
+    /*preparaciones*/
+
+    $routes->get('/preparacion/(:num)', 'Preparaciones::getByIdPreparaciones/$1');
+       $routes->options('/preparacion/(:num)', static function () {
+        return service('response')->setStatusCode(204);
+    });
+    $routes->get('/preparaciones/tipo/(:segment)', 'Preparaciones::getByTipoPreparacion/$1');
+       $routes->options('/preparaciones/tipo/(:segment)', static function () {
+        return service('response')->setStatusCode(204);
+    });
+    $routes->put('/preparacion/(:num)', 'Preparaciones::updateTexto/$1');
+       $routes->options('/preparacion/(:num)', static function () {
+        return service('response')->setStatusCode(204);
+    });
+
+  $routes->get('preparaciones/generate-preparacion-pdf', 'Preparaciones::generatePreparacionPDF');
+    // Y su ruta OPTIONS para el preflight de CORS
+    $routes->options('preparaciones/generate-preparacion-pdf', static function () {
+        return service('response')->setStatusCode(204);
+    });
 });

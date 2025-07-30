@@ -483,12 +483,31 @@ class Informes extends BaseController
         // Es crucial que base_url() genere una URL ACCESIBLE por Dompdf.
         // Para imágenes locales, a veces es mejor usar la ruta física si Dompdf no las carga bien por URL.
         // Si tus imágenes están en la carpeta 'public', deberías poder acceder a ellas con base_url().
-        $logo = base_url('images/logo.png');
-        $firma = base_url('images/firma.png');
 
-        // Logging para verificar las URLs de las imágenes
-        log_message('debug', 'URL Logo: ' . $logo);
-        log_message('debug', 'URL Firma: ' . $firma);
+           $logoPath = FCPATH . 'images/logo.png';
+    $firmaPath = FCPATH . 'images/firma.png';
+
+    $logoBase64 = '';
+    if (file_exists($logoPath)) {
+        $logoType = mime_content_type($logoPath);
+        $logoBase64 = 'data:' . $logoType . ';base64,' . base64_encode(file_get_contents($logoPath));
+        log_message('debug', 'Logo (informe) cargado como Base64. Tamaño: ' . strlen($logoBase64) . ' bytes.');
+    } else {
+        log_message('error', 'Error (informe): El archivo de logo no se encontró en: ' . $logoPath);
+        // Opcional: podrías usar una imagen de placeholder muy pequeña o simplemente dejarla vacía
+        // $logoBase64 = 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs='; // Pequeña imagen transparente
+    }
+
+    $firmaBase64 = '';
+    if (file_exists($firmaPath)) {
+        $firmaType = mime_content_type($firmaPath);
+        $firmaBase64 = 'data:' . $firmaType . ';base64,' . base64_encode(file_get_contents($firmaPath));
+        log_message('debug', 'Firma (informe) cargada como Base64. Tamaño: ' . strlen($firmaBase64) . ' bytes.');
+    } else {
+        log_message('error', 'Error (informe): El archivo de firma no se encontró en: ' . $firmaPath);
+    }
+
+    log_message('debug', 'URLs de logo y firma (Base64) para informe.');
 
      
         $terapeuticaDisplay = (isset($data['terapeutico']) && $data['terapeutico'] == 1) ? 'SI' : 'NO';
@@ -543,7 +562,7 @@ class Informes extends BaseController
 <body>
     <div class='header-box'>
         <div class='header-logo'>
-            <img src='{$logo}' class='logo-img' alt='Logo Clínica Santa Isabel'>
+            <img src='{$logoBase64}' class='logo-img' alt='Logo Clínica Santa Isabel'>
             <div class='logo-caption'>
                 CLÍNICA SANTA ISABEL<br>
                 VIDEOENDOSCOPIAS DIGESTIVAS
@@ -624,7 +643,7 @@ class Informes extends BaseController
     </div>
 
     <div class='footer-box'>
-        <img src='{$firma}' style='width: 150px;' alt='Firma digital'><br>
+        <img src='{$firmaBase64}' style='width: 150px;' alt='Firma digital'><br>
         <p><strong>FIRMA DIGITAL Y SELLO</strong></p>
         <p><strong class='instrucciones'>IMPORTANTE:</strong> Lleve este informe a su próxima consulta médica.</p>
     </div>

@@ -24,14 +24,14 @@ class Usuarios extends BaseController
 
         return $this->response->setStatusCode(200);
     }
-    public function verificarSesion()
+/*     public function verificarSesion()
     {
         if (!session()->has('id_usuario')) {
             return $this->response->setJSON(['status' => 'expirado']);
         }
 
         return $this->response->setJSON(['status' => 'activo']);
-    }
+    } */
 
 
     private function enviarCorreoPHPMailer($to, $subject, $message)
