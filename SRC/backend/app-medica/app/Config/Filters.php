@@ -26,9 +26,7 @@ class Filters extends BaseConfig
 
     public array $globals = [
         'before' => [
-            // 'honeypot',
-            // 'csrf',
-            // 'invalidchars',
+      
             'cors'
         ],
         'after' => [
@@ -44,7 +42,7 @@ class Filters extends BaseConfig
     public array $filters = [
       
         'auth' => [
-            'before' => [
+   /*          'before' => [
                 'usuarios*',
                 'usuario/*',
                 'informes*',
@@ -55,7 +53,7 @@ class Filters extends BaseConfig
                 'formulario',
                 'reportes',
                 'coberturas_view',
-            ],
+            ], */
             'except' => [
                 'login',
                

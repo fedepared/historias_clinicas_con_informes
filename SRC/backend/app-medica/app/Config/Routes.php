@@ -28,7 +28,7 @@ $routes->group('', ['filter' => 'cors'], static function (RouteCollection $route
         return service('response')->setStatusCode(204);
     });
 
-    $routes->get('logout', 'Usuarios::logout'); 
+    $routes->post('logout', 'Usuarios::logout'); 
     $routes->options('logout', static function () {
         return service('response')->setStatusCode(204);
     });

@@ -7,6 +7,7 @@ use CodeIgniter\HTTP\ResponseInterface;
 use PHPMailer\PHPMailer\PHPMailer;
 use App\Models\UsuariosModel;
 use CodeIgniter\API\ResponseTrait;
+use Firebase\JWT\JWT;
 
 class Usuarios extends BaseController
 {
@@ -20,7 +21,7 @@ class Usuarios extends BaseController
     }
     public function options()
     {
-       
+
         return $this->response->setStatusCode(200);
     }
     public function verificarSesion()
@@ -197,15 +198,15 @@ class Usuarios extends BaseController
 
     public function cambiarPassword()
     {
-        
-         $idUsuario = session()->get('id_usuario');
 
-    // 2. Verificar que el usuario haya iniciado sesión
+        $idUsuario = session()->get('id_usuario');
+
+        // 2. Verificar que el usuario haya iniciado sesión
         if (!$idUsuario) {
-          return $this->response->setJSON([
-            'status'  => 'error',
-            'message' => 'Acceso no autorizado. Debes iniciar sesión.'
-          ])->setStatusCode(ResponseInterface::HTTP_UNAUTHORIZED); // 401 Unauthorized
+            return $this->response->setJSON([
+                'status'  => 'error',
+                'message' => 'Acceso no autorizado. Debes iniciar sesión.'
+            ])->setStatusCode(ResponseInterface::HTTP_UNAUTHORIZED); // 401 Unauthorized
         }
 
         $model = new UsuariosModel(); // Instanciamos el modelo de usuarios
@@ -226,7 +227,7 @@ class Usuarios extends BaseController
             ])->setStatusCode(ResponseInterface::HTTP_BAD_REQUEST);
         }
 
-    
+
         // $passwordActual = $data['password_actual'];
         $passwordNuevo = $data['password_nuevo'];
         $passwordConfirmar = $data['password_confirmar'];
@@ -277,11 +278,11 @@ class Usuarios extends BaseController
 
     public function login()
     {
-        $model = new UsuariosModel(); // Instanciamos el modelo correctamente
+
+        $model = new UsuariosModel();
 
         $data = $this->request->getJSON(true);
 
-        // Verificar si se recibieron los datos correctamente
         if (!$data) {
             return $this->response->setJSON([
                 'status' => 'error',
@@ -289,7 +290,6 @@ class Usuarios extends BaseController
             ])->setStatusCode(ResponseInterface::HTTP_BAD_REQUEST);
         }
 
-        // Validar que los datos requeridos estén presentes
         if (!isset($data['nombre_usuario']) || !isset($data['pass'])) {
             return $this->response->setJSON([
                 'status' => 'error',
@@ -297,7 +297,6 @@ class Usuarios extends BaseController
             ])->setStatusCode(ResponseInterface::HTTP_BAD_REQUEST);
         }
 
-        // Usar la función personalizada para buscar el usuario
         $usuario = $model->where('nombre_usuario', $data['nombre_usuario'])->first();
 
         if (!$usuario) {
@@ -307,7 +306,6 @@ class Usuarios extends BaseController
             ])->setStatusCode(ResponseInterface::HTTP_NOT_FOUND);
         }
 
-        // Verificar la contraseña
         if (!password_verify($data['pass'], $usuario['pass'])) {
             return $this->response->setJSON([
                 'status' => 'error',
@@ -315,47 +313,42 @@ class Usuarios extends BaseController
             ])->setStatusCode(ResponseInterface::HTTP_UNAUTHORIZED);
         }
 
+        // --- Lógica JWT ---
+        // Prepara los claims para el token.
+        // EVITA poner información sensible o mucha información en el JWT si no es necesario.
+        // 'id_usuario' y 'nombre_usuario' son claims comunes.
+        $payload = [
+            'id' => $usuario['id_usuario'], // 'uid' es un nombre común para user ID
+            'username' => $usuario['nombre_usuario'],
+            'email' => $usuario['mail'], // Opcional: si necesitas el email en el frontend sin otra petición
+            'pidio_cambio' => $usuario['pidio_cambio'], // Puedes incluir otros datos relevantes
+            // 'roles' => ['admin', 'medico'], // Si tuvieras roles, podrías incluirlos
+        ];
 
+        $jwtToken = generateJWT($payload); // Usa la función helper para generar el JWT
 
-        //logica token carpetas usadas , config ->filters  y Filters -> authGuard
-        \Config\Services::session()->set([
-            'usuario_logueado' => true, // esta es la clave que revisa el filtro
-            'id_usuario' => $usuario['id_usuario'],
-            'nombre_usuario' => $usuario['nombre_usuario'],
-
-        ]);
-        // Fin logica token        
-
-        $sessionExpiration =  config('Session')->expiration;
-        session()->set('expiracion', time() + $sessionExpiration);
-        // Si las credenciales son correctas, devolver una respuesta de éxito
+        // Si las credenciales son correctas, devolver una respuesta de éxito con el JWT
         return $this->response->setJSON([
             'status' => 'success',
             'message' => 'Inicio de sesión exitoso',
-            'data' => [
-                'id' => $usuario['id_usuario'],
-                'nombre_usuario' => $usuario['nombre_usuario'],
-                'mail' => $usuario['mail'],
-                'pidio_cambio' => $usuario['pidio_cambio'],
-                'expiracion' => time() + $sessionExpiration
-            ]
+            'token' => $jwtToken, // Envía el JWT al frontend
+            
         ])->setStatusCode(ResponseInterface::HTTP_OK);
     }
 
-    // Ejemplo de un método ficticio para generar un token JWT
-    private function generateJWT($userId)
-    {
-        // Lógica para generar el token JWT
-        // Puedes usar librerías como Firebase JWT para esto.
-        return 'JWT_TOKEN_GENERADO';
-    }
 
 
     public function logout()
     {
+
         session()->destroy();
 
-       
+
+        return $this->respond([
+            'status' => 'success',
+            'message' => 'Sesión cerrada exitosamente.'
+        ], ResponseInterface::HTTP_OK); // Devuelve un código 200 OK
+
     }
 
 
@@ -483,7 +476,7 @@ class Usuarios extends BaseController
         ]);
     }
 
-     public function updateUsuarios($id)
+    public function updateUsuarios($id)
     {
         try {
             // 1. Verificar si el usuario existe antes de intentar actualizar
@@ -526,7 +519,7 @@ class Usuarios extends BaseController
                     return $this->fail('Ya existe un usuario con este correo electrónico.', ResponseInterface::HTTP_CONFLICT);
                 }
             }
-            
+
             // 6. Realizar la actualización
             if ($this->UsuariosModel->update($id, $dataToUpdate)) {
                 // Recuperar el usuario actualizado para la respuesta (opcional, pero útil)
@@ -541,7 +534,6 @@ class Usuarios extends BaseController
                 // Si la actualización falló (ej. por reglas de validación en el modelo)
                 return $this->failServerError('Error al actualizar el usuario: ' . json_encode($this->UsuariosModel->errors()));
             }
-
         } catch (\Exception $e) {
             // Manejo de excepciones generales
             return $this->failServerError('Ocurrió un error inesperado al actualizar el usuario: ' . $e->getMessage());

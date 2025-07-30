@@ -11,35 +11,30 @@ class CORS implements FilterInterface
     public function before(RequestInterface $request, $arguments = null)
     {
         $origin = $request->getHeaderLine('Origin') ?: '*';
+        $response = service('response');
 
-    // Agregar headers directamente a la salida
-    header('Access-Control-Allow-Origin: ' . $origin);
-    header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
-    header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With');
-    header('Access-Control-Allow-Credentials: true');
+        // Set headers para TODAS las peticiones
+        $response->setHeader('Access-Control-Allow-Origin', $origin);
+        $response->setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, DELETE');
+        $response->setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
+        $response->setHeader('Access-Control-Allow-Credentials', 'true');
 
-    // Terminar ejecución para preflight (OPTIONS)
-    if ($request->getMethod() === 'options') {
-        http_response_code(200);
-        exit;
-    }
-    //   $origin = $request->getHeaderLine('Origin') ?: '*';
-    // $response = service('response');
+        // Si es preflight (OPTIONS), respondé directamente
+        if ($request->getMethod() === 'options') {
+            return $response->setStatusCode(200);
+        }
 
-    // $response->setHeader('Access-Control-Allow-Origin', $origin);
-    // $response->setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-    // $response->setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
-    // $response->setHeader('Access-Control-Allow-Credentials', 'true');
-
-    
-    // if ($request->getMethod() === 'options') {
-    //     return $response->setStatusCode(200);
-    // }
-
+        return null;
     }
 
     public function after(RequestInterface $request, ResponseInterface $response, $arguments = null)
     {
-        return $response;
+        $origin = $request->getHeaderLine('Origin') ?: '*';
+
+        return $response
+            ->setHeader('Access-Control-Allow-Origin', $origin)
+            ->setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, DELETE')
+            ->setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With')
+            ->setHeader('Access-Control-Allow-Credentials', 'true');
     }
 }

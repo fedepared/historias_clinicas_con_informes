@@ -16,8 +16,8 @@ export class HeaderComponent {
     
   }
  
-  salir(){
-    this.genericService.get('logout').subscribe({
+ /*  salir(){
+    this.genericService.post('logout').subscribe({
        next: (response) => {
 
             localStorage.clear();
@@ -29,5 +29,12 @@ export class HeaderComponent {
         }
     })
 
+  }  */
+
+  salir() {
+    localStorage.removeItem('usuarioToken');
+    localStorage.removeItem('expiracion');
+    this.router.navigate(['/']);
   }
+
 }

@@ -15,6 +15,7 @@ export const routes: Routes = [
     { path: '', component: LoginComponent },
     { path: 'formulario', component: FormularioComponent , canActivate: [AuthGuard] },
     { path: 'reportes', component: ReportesComponent, canActivate: [AuthGuard]  },
+
     { path: 'coberturas', component: CoberturasComponent, canActivate: [AuthGuard] },
     { path: 'reset', component: ResetpassComponent, canActivate: [AuthGuard] },
     { path: 'pacientes', component: PacientesComponent, canActivate: [AuthGuard] },

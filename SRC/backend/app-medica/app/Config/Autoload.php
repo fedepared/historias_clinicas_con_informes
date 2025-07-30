@@ -95,5 +95,12 @@ class Autoload extends AutoloadConfig
      *
      * @var list<string>
      */
-    public $helpers = [];
+   
+
+    // app/Config/Autoload.php
+    public $helpers = [
+        'url',
+        'form', 
+        'jwt' 
+    ];
 }
