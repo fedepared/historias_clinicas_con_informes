@@ -9,6 +9,7 @@ import { ResetpassComponent } from './pages/resetpass/resetpass.component';
 import { PacientesComponent } from './pages/pacientes/pacientes.component';
 import { ErrorComponent } from './pages/error/error.component';
 import { AuthGuard } from './guards/auth.guard';
+import { PreparacionesComponent } from './pages/preparaciones/preparaciones.component';
 
 
 export const routes: Routes = [
@@ -20,4 +21,5 @@ export const routes: Routes = [
     { path: 'reset', component: ResetpassComponent, canActivate: [AuthGuard] },
     { path: 'pacientes', component: PacientesComponent, canActivate: [AuthGuard] },
     { path: 'error', component: ErrorComponent},
+    { path: 'preparaciones', component: PreparacionesComponent, canActivate: [AuthGuard]}
 ];

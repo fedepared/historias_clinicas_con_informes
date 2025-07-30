@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { GenericService } from '../../services/generic.service';
 import { Router } from '@angular/router';
 import { AuthGuard } from '../../guards/auth.guard';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-header',
@@ -11,25 +12,25 @@ import { AuthGuard } from '../../guards/auth.guard';
 })
 export class HeaderComponent {
 
-  constructor(private genericService: GenericService,private router: Router, private guard:AuthGuard){
+  constructor(private router: Router, private authService: AuthService) {
+    this.authService.startAuthWatcher();
 
-    
   }
+
+  /*  salir(){
+     this.genericService.post('logout').subscribe({
+        next: (response) => {
  
- /*  salir(){
-    this.genericService.post('logout').subscribe({
-       next: (response) => {
-
-            localStorage.clear();
-            this.router.navigate(['/']); 
-        },
-        error: (err) => {
-            console.error('Error cerrar la session', err);
-            
-        }
-    })
-
-  }  */
+             localStorage.clear();
+             this.router.navigate(['/']); 
+         },
+         error: (err) => {
+             console.error('Error cerrar la session', err);
+             
+         }
+     })
+ 
+   }  */
 
   salir() {
     localStorage.removeItem('usuarioToken');

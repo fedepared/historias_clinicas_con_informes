@@ -19,11 +19,11 @@ export class AuthGuard implements CanActivate {
     const expiracion = Number(expiracionStr);
     const ahora = Math.floor(Date.now() / 1000);
 
-    console.log('ENTRO al AuthGuard - Verificando autenticación...');
-    console.log('UsuarioToken (existencia):', !!usuarioToken);
-    console.log('Expiración (raw):', expiracionStr);
-    console.log('Expiración (parsed):', isNaN(expiracion) ? 'NaN' : new Date(expiracion * 1000));
-    console.log('Ahora:', new Date(ahora * 1000));
+    // console.log('ENTRO al AuthGuard - Verificando autenticación...');
+    // console.log('UsuarioToken (existencia):', !!usuarioToken);
+    // console.log('Expiración (raw):', expiracionStr);
+    // console.log('Expiración (parsed):', isNaN(expiracion) ? 'NaN' : new Date(expiracion * 1000));
+    // console.log('Ahora:', new Date(ahora * 1000));
 
     // Validación principal
     if (!usuarioToken) {
