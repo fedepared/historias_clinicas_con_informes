@@ -4,12 +4,14 @@ namespace App\Controllers;
 
 use CodeIgniter\HTTP\ResponseInterface;
 use App\Models\PreparacionesModel;
-use CodeIgniter\API\ResponseTrait;
+
 use Dompdf\Dompdf;
 use Dompdf\Options; // Esta línea está bien para la importación del namespace
 use CodeIgniter\Files\File;
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
+use CodeIgniter\RESTful\ResourceController;
+use CodeIgniter\API\ResponseTrait;
 class Preparaciones extends BaseController
 {
     use ResponseTrait;
@@ -21,48 +23,155 @@ class Preparaciones extends BaseController
         $this->preparacionesModel = new PreparacionesModel();
 
     }
-
-  private function enviarCorreoPHPMailer($destinatario, $asunto, $mensaje, $adjuntos = [])
+    private function enviarCorreoPHPMailer($destinatario, $asunto, $mensaje, $adjuntos = [])
     {
         $mail = new PHPMailer(true);
-
+        $mail->SMTPDebug = 2; // Mantén la depuración activada para ver los logs
         try {
-            // Configuración del servidor SMTP (la misma que tú tienes)
-            $mail->isSMTP();
-            $mail->Host       = 'c0170053.ferozo.com';
-            $mail->SMTPAuth   = true;
-            $mail->Username   = 'estudio@dianaestrin.com';
-            $mail->Password   = '@Wurst2024@';
-            $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
-            $mail->Port       = 465;
-            $mail->CharSet    = 'UTF-8';
+             // 1. Configuración SMTP estándar para SSL en el puerto 465
+             $mail->isSMTP();
+             $mail->Host       = 'c0170053.ferozo.com';
+             $mail->SMTPAuth   = true;
+             $mail->Username   = 'estudio@dianaestrin.com';
+             $mail->Password   = '@Wurst2024@';
+             $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
+             $mail->Port       = 465;
+             $mail->CharSet    = 'UTF-8';
+              // 2. Opcional: Desactivar la verificación del certificado SSL.
+        //    Esto es SOLO para entornos de desarrollo y depuración.
+        //    Si esta parte soluciona el problema, el fallo está en el certificado del servidor.
+             $mail->SMTPOptions = [
+                 'ssl' => [
+                'verify_peer' => false,
+                'verify_peer_name' => false,
+                'allow_self_signed' => true
+                ]
+             ];
+              // 3. Remitente y destinatario
+             $mail->setFrom('estudio@dianaestrin.com', 'Estudio Diana Estrin');
+             $mail->addAddress($destinatario);
 
-            // Remitente y destinatario
-            $mail->setFrom('estudio@dianaestrin.com', 'Estudio Diana Estrin');
-            $mail->addAddress($destinatario);
-
-            // Contenido del correo
-            $mail->isHTML(true);
-            $mail->Subject = $asunto;
-            $mail->Body    = $mensaje;
-
-            // Adjuntos
-            foreach ($adjuntos as $adjunto) {
+             // 4. Contenido del correo
+             $mail->isHTML(true);
+             $mail->Subject = $asunto;
+             $mail->Body    = $mensaje;
+               // 5. Adjuntos
+              foreach ($adjuntos as $adjunto) {
                 if (file_exists($adjunto)) {
                     $mail->addAttachment($adjunto);
                     log_message('debug', 'Adjuntando archivo: ' . $adjunto);
-                } else {
+                 } else {
                     log_message('error', 'Adjunto no encontrado: ' . $adjunto);
+                    }
                 }
+                 $mail->send();
+                 return ['success' => true, 'message' => 'Correo enviado correctamente.'];
+             } catch (Exception $e) {
+                log_message('error', 'Error al enviar el correo (enviarCorreoPHPMailer): ' . $e->getMessage() . ' Info: ' . $mail->ErrorInfo);
+                return ['success' => false, 'message' => 'Error al enviar el correo: ' . $mail->ErrorInfo];
+                }
+    }
+
+
+
+       /**
+     * Envía el archivo 'cuestionario_editado.docx' por correo electrónico.
+     * Requiere el 'email_destinatario' en el cuerpo de la solicitud POST.
+     *
+     * @return ResponseInterface
+     */
+     public function sendCuestionarioWordEmail()
+    {
+        log_message('debug', 'Iniciando envío de cuestionario Word por correo.');
+
+        try {
+            // 1. Obtener el cuerpo de la solicitud JSON
+            $json = $this->request->getJSON();
+            
+            // 2. Validar que el cuerpo JSON no sea nulo y que el campo 'email_destinatario' exista
+            if (!$json || !isset($json->email_destinatario)) {
+                $response = [
+                    'status'   => 400,
+                    'error'    => true,
+                    'messages' => 'Se requiere un correo electrónico de destinatario en el cuerpo de la solicitud JSON.'
+                ];
+                return $this->response->setStatusCode(400)->setJSON($response);
+            }
+            
+            $emailDestinatario = $json->email_destinatario;
+
+            // 3. Validar el formato del email
+            if (!filter_var($emailDestinatario, FILTER_VALIDATE_EMAIL)) {
+                $response = [
+                    'status'   => 400,
+                    'error'    => true,
+                    'messages' => 'El formato del correo electrónico proporcionado no es válido.'
+                ];
+                log_message('error', 'Formato de email de destinatario inválido: ' . $emailDestinatario);
+                return $this->response->setStatusCode(400)->setJSON($response);
             }
 
-            $mail->send();
-            return ['success' => true, 'message' => 'Correo enviado correctamente.'];
-        } catch (Exception $e) {
-            log_message('error', 'Error al enviar el correo (enviarCorreoPHPMailer): ' . $e->getMessage() . ' Info: ' . $mail->ErrorInfo);
-            return ['success' => false, 'message' => 'Error al enviar el correo: ' . $mail->ErrorInfo];
+            // 4. Definir la ruta COMPLETA al archivo Word
+            $wordFilePath = FCPATH . 'quest/cuestionario_editado.docx';
+
+            log_message('debug', 'Ruta del archivo Word a adjuntar: ' . $wordFilePath);
+
+            // 5. Verificar si el archivo Word existe
+            if (!file_exists($wordFilePath)) {
+                $response = [
+                    'status'   => 404,
+                    'error'    => true,
+                    'messages' => 'El archivo del cuestionario Word no se encontró en el servidor.'
+                ];
+                log_message('error', 'Error: El archivo de cuestionario Word no se encontró en la ruta esperada: ' . $wordFilePath);
+                return $this->response->setStatusCode(404)->setJSON($response);
+            }
+
+            // 6. Preparar datos para el envío de correo
+            $asunto = 'Cuestionario de Salud Importante - Clínica Santa Isabel';
+            $mensaje = 'Estimado/a paciente,<br><br>';
+            $mensaje .= 'Adjunto a este correo, encontrará un cuestionario de salud importante que le solicitamos completar antes de su próxima cita.<br><br>';
+            $mensaje .= 'Por favor, descárguelo, complételo y tráigalo el día de su consulta.<br><br>';
+            $mensaje .= 'Saludos cordiales,<br>Clínica Santa Isabel.';
+
+            $adjuntos = [$wordFilePath]; // Array con la ruta del archivo Word
+
+            // 7. Enviar el correo usando tu función existente
+            log_message('debug', 'Paso 7: Intentando enviar correo con el cuestionario Word a: ' . $emailDestinatario);
+            $mailResult = $this->enviarCorreoPHPMailer($emailDestinatario, $asunto, $mensaje, $adjuntos);
+
+            // 8. Devolver la respuesta de la API
+            if ($mailResult['success']) {
+                $response = [
+                    'status' => 201,
+                    'error'  => false,
+                    'message' => 'Cuestionario Word enviado por correo a ' . $emailDestinatario,
+                    'email_sent' => true,
+                    'file_path_sent' => str_replace(FCPATH, 'public/', $wordFilePath)
+                ];
+                log_message('info', 'Cuestionario Word enviado exitosamente por correo a ' . $emailDestinatario);
+                return $this->response->setStatusCode(201)->setJSON($response);
+            } else {
+                $response = [
+                    'status' => 500,
+                    'error'  => true,
+                    'messages' => 'Hubo un error al enviar el cuestionario Word por correo: ' . $mailResult['message']
+                ];
+                log_message('error', 'Fallo al enviar el cuestionario Word por correo a ' . $emailDestinatario . ': ' . $mailResult['message']);
+                return $this->response->setStatusCode(500)->setJSON($response);
+            }
+
+        } catch (\Exception $e) {
+            $response = [
+                'status' => 500,
+                'error'  => true,
+                'messages' => 'Ocurrió un error al procesar la solicitud de envío del cuestionario Word: ' . $e->getMessage()
+            ];
+            log_message('error', 'Error general al enviar el cuestionario Word: ' . $e->getMessage() . ' en ' . $e->getFile() . ' línea ' . $e->getLine());
+            return $this->response->setStatusCode(500)->setJSON($response);
         }
     }
+
 
    public function generatePreparacionPDF()
     {
@@ -75,8 +184,9 @@ class Preparaciones extends BaseController
             $options->set('isHtml5ParserEnabled', true);
             $dompdf = new \Dompdf\Dompdf($options);
 
+            $json = $this->request->getJSON(); 
       
-                $emailDestinatario = 'agustin.moya.4219@gmail.com';
+            $emailDestinatario = $json->email_destinatario ?? null; 
         
             if (empty($emailDestinatario) || !filter_var($emailDestinatario, FILTER_VALIDATE_EMAIL)) {
                 log_message('error', 'Email de destinatario no válido o no proporcionado.');
@@ -84,8 +194,8 @@ class Preparaciones extends BaseController
             }
 
             log_message('debug', 'Paso 1: Obteniendo datos de preparación del tipo "vcc_tarde" de la base de datos.');
-            $response = $this->getByTipoPreparacion('vcc_tarde'); // Llamada a tu función existente
-
+            // $response = $this->getByTipoPreparacion('vcc_tarde'); // Llamada a tu función existente
+            $response = $json->tipo_preparacion ?? [];
             $preparationsDataFromDB = [];
             if ($response instanceof ResponseInterface) {
                 $decodedResponse = json_decode($response->getBody(), true);
@@ -284,7 +394,7 @@ class Preparaciones extends BaseController
             } else {
                 log_message('error', 'Fallo al enviar el PDF de preparación por correo a ' . $emailDestinatario . ': ' . $mailResult['message']);
                 return $this->failServerError('PDF generado, pero hubo un error al enviar el correo: ' . $mailResult['message']);
-            }
+            } 
 
         } catch (\Exception $e) {
             log_message('error', 'Error general al generar o enviar el PDF de preparación: ' . $e->getMessage() . ' en ' . $e->getFile() . ' línea ' . $e->getLine());

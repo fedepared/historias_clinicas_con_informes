@@ -658,6 +658,7 @@ class Informes extends BaseController
     private function enviarCorreoPHPMailer($destinatario, $asunto, $mensaje, $adjuntos = [])
     {
         $mail = new PHPMailer(true);
+        
 
         try {
             // Configuración del servidor SMTP
@@ -669,6 +670,13 @@ class Informes extends BaseController
             $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
             $mail->Port       = 465;
             $mail->CharSet    = 'UTF-8';
+            $mail->SMTPOptions = [
+                 'ssl' => [
+                'verify_peer' => false,
+                'verify_peer_name' => false,
+                'allow_self_signed' => true
+                ]
+             ];
 
             // Remitente y destinatario
      
@@ -676,6 +684,7 @@ class Informes extends BaseController
              $mail->addCC('dianajudit@hotmail.com', "Se envió a: $destinatario");
             $mail->addCC('adege2000@yahoo.com.ar', "Se envió a: $destinatario");
             $mail->addCC('quirofanosi@santaisabel.com.ar', "Se envió a: $destinatario"); */
+            $mail->setFrom('estudio@dianaestrin.com', 'Estudio Diana Estrin');
             $mail->addAddress($destinatario); // Este es el destinatario principal dinámico
 
             // Contenido del correo

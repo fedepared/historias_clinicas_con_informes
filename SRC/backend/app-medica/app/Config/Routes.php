@@ -183,9 +183,13 @@ $routes->group('', ['filter' => 'cors'], static function (RouteCollection $route
         return service('response')->setStatusCode(204);
     });
 
-    $routes->get('preparaciones/generate-preparacion-pdf', 'Preparaciones::generatePreparacionPDF');
- 
+    $routes->post('preparaciones/generate-preparacion-pdf', 'Preparaciones::generatePreparacionPDF');
     $routes->options('preparaciones/generate-preparacion-pdf', static function () {
+        return service('response')->setStatusCode(204);
+    });
+
+    $routes->post('email/send-cuestionario-word', 'Preparaciones::sendCuestionarioWordEmail');
+    $routes->options('email/send-cuestionario-word', static function () {
         return service('response')->setStatusCode(204);
     });
 });
