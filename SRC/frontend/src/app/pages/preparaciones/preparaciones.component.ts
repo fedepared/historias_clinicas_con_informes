@@ -69,8 +69,8 @@ export class PreparacionesComponent implements OnInit {
     };
     const json = {
       email_destinatario: this.mail,
-      tipo_preparacion:  this.selectTPreparacion.code,
       preparacion: this.preparacion
+      //tipo_preparacion: this.selectTPreparacion.code,
 
     }
 
@@ -95,7 +95,7 @@ export class PreparacionesComponent implements OnInit {
 
         }
       });
-       this.generictServce.post('preparaciones/generate-preparacion-pdf', json).subscribe({
+      this.generictServce.post('preparaciones/generate-preparacion-pdf', json).subscribe({
         next: (response: any) => {
           console.log('generatePDF', response)
 
