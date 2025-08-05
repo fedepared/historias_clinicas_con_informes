@@ -322,7 +322,7 @@ class Usuarios extends BaseController
             'username' => $usuario['nombre_usuario'],
             'email' => $usuario['mail'], // Opcional: si necesitas el email en el frontend sin otra petición
             'pidio_cambio' => $usuario['pidio_cambio'], // Puedes incluir otros datos relevantes
-            // 'roles' => ['admin', 'medico'], // Si tuvieras roles, podrías incluirlos
+            'duracion_sesion' => 7200, 
         ];
 
         $jwtToken = generateJWT($payload); // Usa la función helper para generar el JWT
