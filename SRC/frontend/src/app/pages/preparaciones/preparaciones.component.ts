@@ -10,12 +10,15 @@ import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
 import { MessageModule } from 'primeng/message';
 import { HeaderComponent } from '../../components/header/header.component';
 import { GenericService } from '../../services/generic.service';
+import { MessageService } from 'primeng/api';
+import { ToastModule } from 'primeng/toast';
 
 @Component({
   selector: 'app-preparaciones',
-  imports: [HeaderComponent, MessageModule, InputGroupAddonModule, SelectModule, CommonModule, FormsModule, ButtonModule, TextareaModule, InputGroupModule],
+  imports: [HeaderComponent, MessageModule, InputGroupAddonModule, SelectModule, CommonModule, FormsModule, ButtonModule, TextareaModule, InputGroupModule, ToastModule, MessageModule,],
   templateUrl: './preparaciones.component.html',
-  styleUrl: './preparaciones.component.css'
+  styleUrl: './preparaciones.component.css',
+  providers: [MessageService]
 })
 export class PreparacionesComponent implements OnInit {
 
@@ -27,8 +30,10 @@ export class PreparacionesComponent implements OnInit {
   preparacion!: any[];
   mail: any;
   estudioModificado!: any[];
+  preparacionModif!: any[];
+  desabilitado: boolean = false;
 
-  constructor(private generictServce: GenericService) {
+  constructor(private generictServce: GenericService, private messageService: MessageService) {
 
   }
   ngOnInit(): void {
@@ -64,47 +69,86 @@ export class PreparacionesComponent implements OnInit {
   }
 
   enviar() {
+    if (this.selectTipoEnviar.code == 1) {
+      this.eviarCuestionario();
+
+    } else if (this.selectTipoEnviar.code == 2) {
+      this.enviarPreparacion();
+      
+    } else {
+      this.enviarPreparacion();
+      this.eviarCuestionario();
+
+    }
+
+
+
+  }
+  eviarCuestionario() {
+    this.desabilitado = true;
     const mail = {
       email_destinatario: this.mail,
     };
+    this.generictServce.post('email/send-cuestionario-word', mail).subscribe({
+      next: (response: any) => {
+        console.log('enviar cuestionario', response)
+        if (response.status === true) {
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Éxito',
+            detail: response.message,
+            sticky: true
+          });
+          this.desabilitado = false;
+          this.reset();
+        } else {
+
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: response.message,
+            sticky: true
+          });
+          this.desabilitado = false;
+        }
+
+      }
+    });
+
+  }
+  enviarPreparacion() {
+    this.desabilitado = true;
     const json = {
       email_destinatario: this.mail,
-      tipo_preparacion:  this.selectTPreparacion.code,
       preparacion: this.preparacion
 
     }
+    this.generictServce.post('preparaciones/generate-preparacion-pdf', json).subscribe({
+      next: (response: any) => {
+        console.log('generatePDF', response)
+        if (response.success === true) {
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Éxito',
+            detail: response.message,
+            sticky: true
+          });
+          this.desabilitado = false;
+          this.reset();
+        } else {
 
-    if (this.selectTipoEnviar.code == 1) {
-      this.generictServce.post('email/send-cuestionario-word', mail).subscribe({
-        next: (response: any) => {
-          console.log('enviar cuestionario', response)
-
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: response.message,
+            sticky: true
+          });
+          this.desabilitado = false;
         }
-      });
-    } else if (this.selectTipoEnviar.code == 2) {
-      this.generictServce.post('preparaciones/generate-preparacion-pdf', json).subscribe({
-        next: (response: any) => {
-          console.log('generatePDF', response)
-
-        }
-      });
-    } else {
-      this.generictServce.post('email/send-cuestionario-word', mail).subscribe({
-        next: (response: any) => {
-          console.log('enviar cuestionario', response)
-
-        }
-      });
-       this.generictServce.post('preparaciones/generate-preparacion-pdf', json).subscribe({
-        next: (response: any) => {
-          console.log('generatePDF', response)
-
-        }
-      });
-
-    }
 
 
+      }
+    });
 
   }
 

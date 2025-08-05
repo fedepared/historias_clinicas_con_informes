@@ -2,7 +2,7 @@
 
 <div class="container">
     <div class="form">
-
+       <p-toast />
         <div class="titulo">
             <h2>Preparaciones</h2>
         </div>
@@ -35,7 +35,7 @@
                 <p>Preparacion</p>
                 @for (item of preparacion; track $index) {
                 
-                <textarea class="text" [disabled]="item.es_editable == false" pTextarea>{{item.texto}}</textarea>
+                <textarea class="text"  [disabled]="item.es_editable == false" pTextarea [(ngModel)]="item.texto"></textarea>
                 <!-- 
                 //por si acaso
                     <p-button icon="pi pi-check" (click)="toggleEdition(item)"></p-button> 
@@ -43,7 +43,7 @@
                 }
             </div>
             <div>
-                <p-button label="Enviar" [disabled]="emailModel.invalid" (click)="enviar()"></p-button>
+                <p-button [label]="desabilitado ? 'Enviando' : 'Enviar'" [disabled]="emailModel.invalid || desabilitado" (click)="enviar()"></p-button>
             </div>
         </div>
 

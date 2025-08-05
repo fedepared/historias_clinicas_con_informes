@@ -359,12 +359,12 @@ export class FormularioComponent implements OnInit {
 
 
     this.genericService.post('informe/alta', formData).subscribe({
-      next: (response: IResponse<any>) => {
-        if (response.status === 'success') {
+      next: (response: any) => {
+        if (response.success === true) {
           this.messageService.add({
             severity: 'success',
             summary: 'Éxito',
-            detail: response.message || 'Informe cargado exitosamente',
+            detail: response.message ,
             sticky: true,
           });
           this.form.reset();
@@ -374,7 +374,7 @@ export class FormularioComponent implements OnInit {
           this.messageService.add({
             severity: 'error',
             summary: 'Error',
-            detail: response.message || 'Error al cargar informe',
+            detail: response.message ,
             sticky: true
           });
           console.error('Error al cargar informe (respuesta no exitosa):', response);
