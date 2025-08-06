@@ -12,7 +12,6 @@ export class AuthService {
 
   constructor(private router: Router, private genericService: GenericService) {
     this.startAuthWatcher();
-    console.log('Entro')
 
 
   }
@@ -27,28 +26,19 @@ export class AuthService {
       const expiracion = Number(expiracionStr);
       const ahora = Math.floor(Date.now() / 1000);
 
-      if (!usuarioToken) {
-        console.log('AuthGuard: No se encontró usuarioToken. Redirigiendo a /error.');
+      if (!usuarioToken || !expiracionStr) {
         this.stopAuthWatcher();
         this.clearAndRedirect();
-        return false;
+        return;
       }
 
-      if (!expiracionStr || isNaN(expiracion)) {
-        console.log('AuthGuard: Expiración no encontrada o no es un número. Redirigiendo a /error.');
+      if (isNaN(expiracion) || ahora >= expiracion) {
+        console.log('Token expirado o inválido. Cerrando sesión.');
         this.stopAuthWatcher();
         this.clearAndRedirect();
-        return false;
-      }
-
-      if (ahora > expiracion) {
-        console.log('AuthGuard: Token expirado. Redirigiendo a /error.');
-        this.stopAuthWatcher();
-        this.clearAndRedirect();
-        return false;
       }
       console.log('AuthGuard: Autenticado y token válido. Acceso permitido.');
-      return true;
+     
     });
   }
 
@@ -57,7 +47,7 @@ export class AuthService {
     this.checkInterval$ = null;
   }
   private clearAndRedirect(): void {
-    localStorage.clear(); // Limpia cualquier token inválido o expirado
-    this.router.navigate(['/error']);
+    localStorage.clear(); 
+    this.router.navigate(['/']);
   }
 }

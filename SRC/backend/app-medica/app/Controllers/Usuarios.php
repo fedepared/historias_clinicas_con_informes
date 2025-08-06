@@ -317,12 +317,15 @@ class Usuarios extends BaseController
         // Prepara los claims para el token.
         // EVITA poner información sensible o mucha información en el JWT si no es necesario.
         // 'id_usuario' y 'nombre_usuario' son claims comunes.
+        
         $payload = [
             'id' => $usuario['id_usuario'], // 'uid' es un nombre común para user ID
             'username' => $usuario['nombre_usuario'],
             'email' => $usuario['mail'], // Opcional: si necesitas el email en el frontend sin otra petición
             'pidio_cambio' => $usuario['pidio_cambio'], // Puedes incluir otros datos relevantes
             // 'roles' => ['admin', 'medico'], // Si tuvieras roles, podrías incluirlos
+            'iat' => time(),                    // issued at
+            'exp' => time() + 7200,
         ];
 
         $jwtToken = generateJWT($payload); // Usa la función helper para generar el JWT

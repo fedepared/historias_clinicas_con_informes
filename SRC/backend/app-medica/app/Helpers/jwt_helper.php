@@ -29,15 +29,19 @@ if (!function_exists('generateJWT')) {
     {
         $key = getJWTSecret();
         $iat = time(); // Issued at: tiempo en que el token fue emitido
-        $exp = $iat + (3600 * 24); // Expiration time: 24 horas a partir de ahora (puedes ajustar esto)
+        if (!isset($payload['iat'])) {
+        $payload['iat'] = $iat;
+        }
 
-        $payload = array_merge($payload, [
-            'iat' => $iat,
-            'exp' => $exp,
-            'iss' => base_url(), // Emisor (issuer), tu dominio
-            // 'aud' => 'your_audience', // Audiencia, si tuvieras varias apps consumiendo la API
-        ]);
+        if (!isset($payload['exp'])) {
+        $payload['exp'] = $iat + (3600 * 24); // 24 horas por defecto si no viene
+        }
 
+        if (!isset($payload['iss'])) {
+        $payload['iss'] = base_url();
+        }
+
+      
         // Usa la clase JWT importada
         return JWT::encode($payload, $key, 'HS256');
     }
