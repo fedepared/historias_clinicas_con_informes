@@ -1,0 +1,19 @@
+<app-header></app-header>
+<p-toast />
+<div class="container">
+    <div class="form">
+        <div class="titulo">
+
+            <h2>Cambiar Contraseña</h2>
+        </div>
+        <div class="input">
+            <span class="material-icons">lock</span>
+            <p-password  [(ngModel)]="pass1" [toggleMask]="true" placeholder="Contraseña nueva"  [feedback]="false"/>
+        </div>
+        <div class="input">
+            <span class="material-icons">lock</span>
+            <p-password   [(ngModel)]="pass2" [toggleMask]="true" placeholder="Repetir Contraseña" [feedback]="false" />
+        </div>
+        <p-button (click)="validar()" type="submit" id="submitBtn" [disabled]="!pass1 || !pass2" label="Modificar" />
+    </div>
+</div>

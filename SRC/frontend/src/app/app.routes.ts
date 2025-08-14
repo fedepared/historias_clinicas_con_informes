@@ -1,10 +1,25 @@
 import { Routes } from '@angular/router';
-import { FormularioComponent } from './components/formulario/formulario.component';
-import { HeaderComponent } from './components/header/header.component';
-import { LoginComponent } from './components/login/login.component';
+
+
+import { FormularioComponent } from './pages/formulario/formulario.component';
+import { LoginComponent } from './pages/login/login.component';
+import { ReportesComponent } from './pages/reportes/reportes.component';
+import { CoberturasComponent } from './pages/coberturas/coberturas.component';
+import { ResetpassComponent } from './pages/resetpass/resetpass.component';
+import { PacientesComponent } from './pages/pacientes/pacientes.component';
+import { ErrorComponent } from './pages/error/error.component';
+import { AuthGuard } from './guards/auth.guard';
+import { PreparacionesComponent } from './pages/preparaciones/preparaciones.component';
+
 
 export const routes: Routes = [
-    { path: 'login', component: LoginComponent },
-    { path: 'header', component: HeaderComponent },
-    { path: 'formulario', component: FormularioComponent },
+    { path: '', component: LoginComponent },
+    { path: 'formulario', component: FormularioComponent , canActivate: [AuthGuard] },
+    { path: 'reportes', component: ReportesComponent, canActivate: [AuthGuard]  },
+
+    { path: 'coberturas', component: CoberturasComponent, canActivate: [AuthGuard] },
+    { path: 'reset', component: ResetpassComponent, canActivate: [AuthGuard] },
+    { path: 'pacientes', component: PacientesComponent, canActivate: [AuthGuard] },
+    { path: 'error', component: ErrorComponent},
+    { path: 'preparaciones', component: PreparacionesComponent, canActivate: [AuthGuard]}
 ];

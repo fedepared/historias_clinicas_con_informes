@@ -1,0 +1,94 @@
+.container {
+    text-align: center;
+
+    width: 100%;
+
+    min-height: 100vh;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    box-sizing: border-box;
+}
+
+.form {
+    width: 100%;
+}
+
+
+.titulo {
+    margin-bottom: 2rem;
+    text-align: center;
+    font-size: 25px;
+    font-weight: bold;
+    color: #007bbd;
+}
+
+.sub {
+    font-size: 20px;
+    margin-top: 2rem;
+}
+
+.required-asterisk {
+    color: #007bbd;
+    font-weight: bold;
+}
+
+::ng-deep .iconArchivos .p-button {
+    color: #000000;
+    background: #10b98100;
+    width: 7rem;
+    border: 1px solid;
+    border-radius: 10rem;
+}
+
+::ng-deep .button .p-button {
+
+    width: 100% !important;
+}
+
+::ng-deep .p-datepicker {
+    position: relative;
+    display: inline-flex;
+
+    width: 100%;
+}
+
+::ng-deep .p-inputtext {
+    width: 100%;
+}
+
+::ng-deep .p-autocomplete {
+    width: 100%;
+}
+
+::ng-deep .btEnviar .p-button {
+    display: inline-flex;
+    cursor: pointer;
+    user-select: none;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+    color: var(--p-button-primary-color);
+    background: var(--p-button-primary-background);
+    border: 1px solid var(--p-button-primary-border-color);
+    padding-block: var(--p-button-padding-y);
+    padding-inline: var(--p-button-padding-x);
+    font-size: 1rem;
+    font-family: inherit;
+    font-feature-settings: inherit;
+    transition: background var(--p-button-transition-duration), color var(--p-button-transition-duration), border-color var(--p-button-transition-duration), outline-color var(--p-button-transition-duration), box-shadow var(--p-button-transition-duration);
+    border-radius: var(--p-button-border-radius);
+    outline-color: transparent;
+    gap: var(--p-button-gap);
+    width: 100%;
+}
+
+.delete-button {
+    position: absolute; 
+  top: 5px; 
+  right: 5px; 
+  z-index: 10;
+}

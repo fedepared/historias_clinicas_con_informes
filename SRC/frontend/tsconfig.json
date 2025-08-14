@@ -5,6 +5,17 @@
   "compilerOptions": {
     "outDir": "./dist/out-tsc",
     "strict": true,
+    "paths": {
+      "generic-api-lib": [
+        "./dist/generic-api-lib"
+      ],
+      "generic-lib": [
+        "./dist/generic-lib"
+      ],
+      "generic-service": [
+        "./dist/generic-service"
+      ]
+    },
     "noImplicitOverride": true,
     "noPropertyAccessFromIndexSignature": true,
     "noImplicitReturns": true,

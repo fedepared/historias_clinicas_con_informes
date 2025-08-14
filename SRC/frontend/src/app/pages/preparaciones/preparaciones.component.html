@@ -1,0 +1,51 @@
+<app-header></app-header>
+
+<div class="container">
+    <div class="form">
+       <p-toast />
+        <div class="titulo">
+            <h2>Preparaciones</h2>
+        </div>
+        <div class="flex flex-row-reverse">
+            <p-button type="button" icon="pi pi-refresh" (click)="reset()" text />
+        </div>
+        <div class="flex flex-column align-items-center gap-4">
+
+            <div class="flex flex-column align-items-center">
+                <label for="">Selecione una opcion a enviar</label>
+                <p-select [options]="tipoEnviar" [(ngModel)]="selectTipoEnviar" optionLabel="name"
+                    placeholder="Seleccione una opcion" />
+            </div>
+            <div *ngIf="!selectTipoEnviar || selectTipoEnviar.code != 1 " class="flex flex-column align-items-center">
+
+                <label for="">Selecione un tipo de preparacion</label>
+                <p-select [options]="tipoPreparacion" [(ngModel)]="selectTPreparacion" optionLabel="name"
+                    placeholder="Seleccione una preparacion" (click)="getPreparacioByID(selectTPreparacion.code)" />
+            </div>
+
+            <div class="flex flex-column align-items-center">
+                <label for="">Ingrese mail a enviar</label>
+
+                <input class="mail" pInputText [(ngModel)]="mail" placeholder="Mail" #emailModel="ngModel"
+                    [ngModelOptions]="{ standalone: true }" required email autocomplete="off" placeholder="Mail" />
+                <p-message *ngIf="emailModel.invalid && emailModel.touched" text="Email es requerido y debe ser válido"
+                    severity="error" variant="simple" size="small"></p-message>
+            </div>
+            <div *ngIf="!selectTipoEnviar || selectTipoEnviar.code != 1" class="flex flex-column">
+                <p>Preparacion</p>
+                @for (item of preparacion; track $index) {
+                
+                <textarea class="text"  [disabled]="item.es_editable == false" pTextarea [(ngModel)]="item.texto"></textarea>
+                <!-- 
+                //por si acaso
+                    <p-button icon="pi pi-check" (click)="toggleEdition(item)"></p-button> 
+                -->
+                }
+            </div>
+            <div>
+                <p-button [label]="desabilitado ? 'Enviando' : 'Enviar'" [disabled]="emailModel.invalid || desabilitado" (click)="enviar()"></p-button>
+            </div>
+        </div>
+
+    </div>
+</div>

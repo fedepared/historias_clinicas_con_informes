@@ -1,0 +1,232 @@
+
+<div class="container">
+    <form class="form " [formGroup]="form">
+
+        <h3 class="titulo sub">Datos del paciente</h3>
+
+        <div class="flex flex-row gap-3 justify-conten-between  w-full">
+
+            <div class="flex flex-column align-items-start  w-full">
+                <label for="nombre_paciente">Apellido y Nombre <span class="required-asterisk">*</span></label>
+                <input class="w-full" id="nombre_paciente" type="text" pInputText formControlName="nombre_paciente">
+                <p-message severity="error" variant="simple" size="small"
+                    *ngIf="form.get('nombre_paciente')?.invalid">Apellido y Nombre
+                    es requerido</p-message>
+            </div>
+
+            <div class="flex flex-column align-items-start  w-full">
+                <label for="fecha_nacimiento_paciente">Fecha de nacimiento</label>
+                <p-datepicker class="date w-full" formControlName="fecha_nacimiento_paciente" [iconDisplay]="'input'"
+                    [showIcon]="true" id="fecha_nacimiento_paciente" dateFormat="dd/mm/yy" [showButtonBar]="true"
+                    (ngModelChange)="calcularEdad(form.get('fecha_nacimiento_paciente')?.value)" [inputStyleClass]="'w-full'"></p-datepicker>
+            </div>
+
+
+
+            <div class="flex flex-column align-items-start  w-full">
+                <label for="edad">Edad</label>
+                <input class="w-full" id="edad" type="number" pInputText formControlName="edad">
+                <p-message severity="error" variant="simple" size="small" *ngIf="form.get('edad')?.value == '' ">Debe
+                    selecionar un fecha de nacimiento</p-message>
+            </div>
+
+            <div class="flex flex-column align-items-start  w-full">
+                <label for="dni_paciente">Número de Documento <span class="required-asterisk">*</span></label>
+                <input class="w-full" id="dni_paciente" type="text" pInputText formControlName="dni_paciente">
+                <p-message severity="error" variant="simple" size="small"
+                    *ngIf="form.get('dni_paciente')?.invalid">Número de Documento
+                    es requerido </p-message>
+            </div>
+        </div>
+        <div class="flex flex-row gap-3 justify-conten-between  w-full">
+
+            <div class=" flex flex-column align-items-start w-full">
+                <label for="id_cobertura">Tipo de cobertura <span class="required-asterisk">*</span></label>
+                <p-select class="w-full" id="id_cobertura" [options]="coberturas" formControlName="id_cobertura"
+                    optionLabel="nombre_cobertura" optionValue="id_cobertura"
+                    placeholder="Seleccione una cobertura"></p-select>
+                <p-message severity="error" variant="simple" size="small" *ngIf="form.get('id_cobertura')?.invalid">Tipo
+                    de Cobertura
+                    es requerido</p-message>
+            </div>
+
+            <div class=" flex flex-column align-items-start w-full">
+                <label for="numero_afiliado">Número de Afiliado</label>
+                <input class="w-full" id="numero_afiliado" type="text" pInputText formControlName="numero_afiliado">
+            </div>
+
+            <div class="  flex flex-column align-items-start w-full">
+                <label for="mail_paciente">Mail <span class="required-asterisk">*</span></label>
+                <input class="w-full" id="mail_paciente" type="mail" pInputText formControlName="mail_paciente">
+                <p-message severity="error" variant="simple" size="small"
+                    *ngIf="form.get('mail_paciente')?.invalid && (form.get('mailPaciente')?.dirty )">Mail
+                    es requerido y debe ser válido</p-message>
+            </div>
+
+            <div class=" flex flex-column align-items-start w-full">
+                <label for="inputMedicoEnvia">Médico que envía </label>
+
+                <p-autocomplete class="w-full " id="medico_envia_estudio" formControlName="medico_envia_estudio"
+                    [suggestions]="filteredMedicosSuggestions" (completeMethod)="searchMedico($event)"
+                    field="name"></p-autocomplete>
+            </div>
+
+
+
+        </div>
+        <div class="flex flex-row">
+            <div class="flex flex-column align-items-start  w-full">
+                <label for="motivo_estudio">Motivo del estudio</label>
+                <input class=" w-full" id="motivo_estudio" type="text" pInputText formControlName="motivo_estudio">
+            </div>
+        </div>
+
+        <h3 class="titulo sub">Informe del estudio</h3>
+        <div class="flex flex-column  gap-3 w-full">
+            <div class="flex flex-column align-items-start  " *ngIf="form.get('tipo_informe')?.value === 'VEDA'">
+
+                <label for="inputEsfago">Esófago</label>
+                <textarea class=" w-full" id="inputEsfago" rows="3" pInputTextarea formControlName="esofago"></textarea>
+
+            </div>
+            <div class="flex flex-column align-items-start" *ngIf="form.get('tipo_informe')?.value === 'VEDA'">
+
+                <label for="inputEstomago">Estómago</label>
+                <textarea class=" w-full" id="inputEstomago" rows="3" pInputTextarea
+                    formControlName="estomago"></textarea>
+
+            </div>
+            <div class="flex flex-column align-items-start" *ngIf="form.get('tipo_informe')?.value === 'VEDA'">
+
+                <label for="inputDuodeno">Duodeno</label>
+                <textarea class=" w-full" id="inputDuodeno" rows="3" pInputTextarea
+                    formControlName="duodeno"></textarea>
+
+            </div>
+            <div class="flex flex-column align-items-start" *ngIf="form.get('tipo_informe')?.value === 'VCC'">
+
+                <label for="informe">Informe</label>
+                <textarea class=" w-full" id="informe" rows="3" pInputTextarea formControlName="informe"></textarea>
+
+            </div>
+            <div class="flex flex-column align-items-start">
+
+                <label for="inputConclusion">Conclusión</label>
+                <textarea class=" w-full" id="inputConclusion" rows="3" pInputTextarea
+                    formControlName="conclusion"></textarea>
+
+            </div>
+        </div>
+        <div class="flex flex-row w-full  gap-3 ">
+
+            <div class="flex flex-column align-items-start w-full ">
+                <label for="efectuo_terapeutica">¿Se efectuó terapéutica?</label>
+
+                <p-select [options]="siNo" id="efectuo_terapeutica" formControlName="efectuo_terapeutica"
+                    optionLabel="name" optionValue="code" class="w-full " />
+            </div>
+
+            <div class="flex flex-column align-items-start w-full "
+                *ngIf="form.get('efectuo_terapeutica')?.value === 1">
+
+                <label for="tipo_terapeutica">¿Cual?</label>
+
+                <p-autocomplete class="w-full " id="tipo_terapeutica" formControlName="tipo_terapeutica"
+                    [suggestions]="filteredTerapeuticaSuggestions" (completeMethod)="searchTerapeutica($event)"
+                    field="name"></p-autocomplete>
+
+
+            </div>
+            <div class="flex flex-column align-items-start w-full ">
+
+                <label for="efectuo_biopsia">¿Se efectuó biopsia?</label>
+
+                <p-select id="efectuo_biopsia" [options]="siNo" formControlName="efectuo_biopsia" optionLabel="name"
+                    optionValue="code" class="w-full " />
+
+            </div>
+            <div class="flex flex-column align-items-start w-full " *ngIf="form.get('efectuo_biopsia')?.value === 1">
+
+                <label for="fracos_biopsia">Cantidad de frascos</label>
+                <input class="w-full " id="fracos_biopsia" type="number" pInputText formControlName="fracos_biopsia">
+
+            </div>
+        </div>
+        <h3 class="titulo sub">Agregar imagenes al estudio</h3>
+        <div class="flex">
+            <div class="flex flex-column align-items-start w-full ">
+                <label for="inputSubirFotos">Subir fotos </label>
+                
+                <div class="card shadow-1 surface-card border-round-xl p-5 w-full">
+                    <p-fileUpload class="file" name="myfile[]" accept="image/*" mode="advanced" [multiple]="true"
+                        [showUploadButton]="false" [showCancelButton]="false" (onUpload)="onTemplatedUpload()"
+                        (onSelect)="onSelectedFiles($event)" [customUpload]="true" [auto]="false">
+
+                        <ng-template #header let-chooseCallback="chooseCallback" let-clearCallback="clearCallback"
+                            let-uploadCallback="uploadCallback" let-files>
+                            <div class="w-full">
+                                <p-button class="iconArchivos" icon="pi pi-cloud-upload text-7xl"
+                                    (onClick)="choose($event, chooseCallback)"></p-button>
+
+                            </div>
+                        </ng-template>
+
+
+                        <ng-template #content let-files let-removeFileCallback="removeFileCallback">
+                            <div *ngIf="files?.length > 0" class="flex flex-wrap gap-4">
+                                <div *ngFor="let file of files; let i = index"
+                                    class="p-3 border-1 surface-border border-round-xl surface-card w-36 flex flex-column items-center text-center relative">
+                                    <img [src]="file.objectURL" [alt]="file.name" class="mb-2 border-round"
+                                        style="width: 150px; height: 150px; object-fit: cover" />
+                                    <span class="text-sm font-semibold truncate w-full mb-1">{{ file.name }}</span>
+                                    <small class="text-xs text-surface-500">{{ formatSize(file.size) }}</small>
+
+
+                                    <p-button icon="pi pi-times"
+                                        (click)="onRemoveTemplatingFile($event, file, removeFileCallback, i)"
+                                        [outlined]="true" [rounded]="true" severity="danger"
+                                        styleClass="absolute top-0 right-0 m-1"></p-button>
+                                </div>
+                            </div>
+                        </ng-template>
+
+
+                        <ng-template #empty>
+                            <div class=" w-full">
+
+                                <p class="mt-4 mb-0 text-sm">No se a cargado ningun archivo.</p>
+                            </div>
+                        </ng-template>
+
+
+                        <ng-template #file></ng-template>
+                    </p-fileUpload>
+                </div>
+
+            </div>
+        </div>
+        <h3 class="titulo sub">Imagenes Existentes del estudio</h3>
+
+        <div class="mb-5">
+            <div *ngIf="imagenesE.length > 0; else noImages" class="flex flex-wrap gap-1 align-items-start">
+                <div *ngFor="let imageUrl of imagenesE; let i = index" class="flex flex-column align-items-center relative border-1 p-3 border-round-2xl">
+                    <p-image [src]="imageUrl.url" alt="Imagen" width="200"></p-image>
+                    <p-button class="delete-button" pButton type="button" icon="pi pi-times" severity="danger" [rounded]="true"
+                        [outlined]="true" (click)="eliminarImagen(i)"></p-button>
+                </div>
+            </div>
+            <ng-template #noImages>
+                <p>No hay imágenes para mostrar.</p>
+            </ng-template>
+        </div>
+
+
+        <div class="flex ">
+            <div class="w-full ">
+                <p-button class="btEnviar w-full " pButton type="submit"
+                    [label]="enviando ? 'Guardando cambios...' : 'Editar '"
+                    [disabled]="form.invalid || enviando" (click)="putReporte()" />
+            </div>
+        </div>
+    </form>
+</div>

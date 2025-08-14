@@ -1,0 +1,143 @@
+.container {
+    text-align: center;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    box-sizing: border-box;
+}
+
+.form {
+    width: 100%;
+    max-width: 90%;
+    padding: 12px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border: 2px solid #e1e1e1;
+    background-color: #ffffff;
+
+}
+
+.titulo {
+    margin-bottom: 20px;
+    text-align: center;
+    font-size: 25px;
+    font-weight: bold;
+    color: #007bbd;
+}
+
+.field {
+    /* Removed flex-direction: row and align-items: center from here */
+    /* They are now handled by .input-with-icon */
+    margin-bottom: 1rem;
+}
+
+.input-with-icon {
+    position: relative;
+    /* Establish a positioning context for the icon */
+    display: flex;
+    /* Use flexbox to keep input and icon on one line if needed */
+    align-items: center;
+    /* Vertically align items */
+}
+
+.input-with-icon input {
+    border: 1px solid #c6bcbc;
+    border-radius: 4px;
+    width: 100%;
+    height: 40px;
+    padding-right: 40px;
+}
+
+.search-icon {
+    position: absolute;
+    /* Position the icon absolutely within its parent */
+    right: 10px;
+    /* Adjust as needed to position the icon from the right */
+    color: #888;
+    /* Color for the icon */
+    pointer-events: none;
+    /* Make the icon non-clickable so clicks pass through to the input */
+}
+
+
+::ng-deep .date .p-button {
+    display: inline-flex;
+    cursor: pointer;
+    user-select: none;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+    color: var(--p-button-primary-color);
+    background: #007bbd;
+    border: 1px solid #007bbd;
+    padding-block: var(--p-button-padding-y);
+    padding-inline: var(--p-button-padding-x);
+    font-size: 1rem;
+    font-family: inherit;
+    font-feature-settings: inherit;
+    transition: background var(--p-button-transition-duration), color var(--p-button-transition-duration), border-color var(--p-button-transition-duration), outline-color var(--p-button-transition-duration), box-shadow var(--p-button-transition-duration);
+    border-radius: var(--p-button-border-radius);
+    outline-color: transparent;
+    gap: var(--p-button-gap);
+}
+
+::ng-deep .date .p-button-text {
+    background: transparent;
+    border-color: transparent;
+    color: #007bbd;
+}
+
+::ng-deep .date .p-inputtext {
+    font-family: inherit;
+    font-feature-settings: inherit;
+    font-size: 1rem;
+    color: #000000;
+    transition: background var(--p-inputtext-transition-duration), color var(--p-inputtext-transition-duration), border-color var(--p-inputtext-transition-duration), outline-color var(--p-inputtext-transition-duration), box-shadow var(--p-inputtext-transition-duration);
+    appearance: none;
+    width: 12rem;
+    height: 2.5rem;
+    border: 1px solid #c6bcbc;
+    border-radius: 4px;
+}
+
+::ng-deep .p-button-text {
+    background: transparent;
+    border-color: transparent;
+    color: #007bbd !important;
+}
+
+::ng-deep .input-with-icon p-select {
+
+    display: inline-flex;
+    cursor: pointer;
+    position: relative;
+    user-select: none;
+    background: var(--p-select-background);
+    border: 1px solid var(--p-select-border-color);
+    transition: background var(--p-select-transition-duration), color var(--p-select-transition-duration), border-color var(--p-select-transition-duration), outline-color var(--p-select-transition-duration), box-shadow var(--p-select-transition-duration);
+    border-radius: var(--p-select-border-radius);
+    outline-color: transparent;
+    box-shadow: var(--p-select-shadow);
+    height: 2.5rem;
+    width: 12rem;
+
+}
+
+::ng-deep .p-dialog {
+    max-height: 90%;
+    min-width: 75%;
+    max-width: 75% !important;
+    transform: scale(1);
+    border-radius: var(--p-dialog-border-radius);
+    box-shadow: var(--p-dialog-shadow);
+    background: var(--p-dialog-background);
+    border: 1px solid var(--p-dialog-border-color);
+    color: var(--p-dialog-color);
+    display: flex;
+    flex-direction: column;
+    pointer-events: auto;
+}
