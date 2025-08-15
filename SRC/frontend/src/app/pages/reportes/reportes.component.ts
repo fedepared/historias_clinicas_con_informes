@@ -217,7 +217,7 @@ export class ReportesComponent implements OnInit {
   }
   descargarInforme(url: string) {
     this.spinnerD = true;
-    const ruta = 'http://localhost:8080/descargar-archivo?ruta=' + url;
+    const ruta = environment.baseUrl+'descargar-archivo?ruta=' + url;
     this.http.get(ruta, { responseType: 'blob' as 'blob', withCredentials: true, }).subscribe({
       next: (blob: Blob) => {
 

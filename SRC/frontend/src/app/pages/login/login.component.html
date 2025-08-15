@@ -1,5 +1,5 @@
 <div class="container">
-    <div class="form">
+    <div class="form" (keyup.enter)="login()" >
         <div class="title">
 
             <h1>Iniciar Sesion</h1>
@@ -29,9 +29,8 @@
                 es requerida</p-message>
         </div>
 
-
-        <p-button type="submit" id="submitBtn" [disabled]="isLoginButtonDisabled || enviando" (click)="login() "
-            [label]="enviando ? 'Ingresando...' : 'Ingresar '"></p-button>
+            <p-button type="submit" id="submitBtn" [disabled]="isLoginButtonDisabled || enviando" (click)="login()" 
+                [label]="enviando ? 'Ingresando...' : 'Ingresar '" ></p-button>
         <div class="mt-5 card flex justify-center">
             <p-toast />
             <p-confirmdialog />
